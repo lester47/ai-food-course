@@ -72,3 +72,5 @@ h1,h2,h3,.brand>span,.week-card h3,.page-heading h1{font-family:'LXGW WenKai TC'
  .dq-banner{padding:24px 20px 64px}
 }
 
+
+.hero .hero-game{margin:-4px 0 12px}.hero-game a{font-weight:700;color:var(--forest);background:#fff8dc;border:1.5px solid #e8c95a;border-radius:999px;padding:6px 14px;display:inline-block;font-size:14px}.hero-game a:hover{background:#ffeeb0}.game-callout{background:#fff8e6;border:1.5px solid #f0dfae;border-radius:12px;padding:14px 18px;margin:18px 0}.game-callout .button{margin-top:8px}

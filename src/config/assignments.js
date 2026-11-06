@@ -6,5 +6,5 @@ export const assignments = {
  w4: {provider:'googleForm', formUrl:'https://forms.gle/UC5eyTRtk4WPz47YA', open:false, deadline:'', note:'每組填寫負責鄉鎮的農產資料，一定要附官方來源網址。'},
  w5: {provider:'googleForm', formUrl:'https://forms.gle/fZTzRv9rH9z7G3f2A', open:false, deadline:'', note:'請貼上期末作品連結、小組自訂規則與測試紀錄。'}
 };
-export const integration = { gameUrl: '', mapGeoJson: '' }; // 可填學校核准的 HTTPS 遊戲入口；真實 GeoJSON 可在後續版本整合。
+export const integration = { gameUrl: 'https://lester47.github.io/nantawfood/', mapGeoJson: '' }; // 可填學校核准的 HTTPS 遊戲入口；真實 GeoJSON 可在後續版本整合。
 export const gallery = []; // 僅加入已獲授權的匿名作品：{ title, weekId, url, approved: true }
