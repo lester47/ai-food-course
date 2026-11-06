@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function own(uid) {
+   return request.auth != null && request.auth.uid == uid
+    && request.auth.token.firebase.sign_in_provider == 'google.com';
+  }
+  function validTask(id) {
+   return id.matches('^w1-t(0[1-9]|10)$') || id.matches('^w[2-5]-t0[1-6]$');
+  }
+  match /learners/{uid}/tasks/{taskId} {
+   allow read: if own(uid);
+   allow create, update: if own(uid) && validTask(taskId)
+    && request.resource.data.keys().hasOnly(['done', 'updatedAt'])
+    && request.resource.data.keys().hasAll(['done', 'updatedAt'])
+    && request.resource.data.done is bool
+    && request.resource.data.updatedAt == request.time;
+  }
+  match /learners/{uid}/state/course {
+   allow read: if own(uid);
+   allow create, update: if own(uid)
+    && request.resource.data.keys().hasOnly(['lastTask', 'updatedAt'])
+    && request.resource.data.keys().hasAll(['lastTask', 'updatedAt'])
+    && request.resource.data.lastTask is string
+    && validTask(request.resource.data.lastTask)
+    && request.resource.data.updatedAt == request.time;
+  }
+  // 其餘路徑、跨帳號讀寫、匿名存取及刪除皆預設拒絕。
+ }
+}
