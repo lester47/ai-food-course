@@ -1,0 +1,395 @@
+// 第一週 v2：PBL 故事線 + PRIMM（先預測再執行）+ 三層難度。
+// 第一週只用 MakeCode 瀏覽器模擬器（實體板選用），不含任何連線或無線功能。
+
+export const drivingQuestion = '我們要怎麼讓更多人認識南投 13 鄉鎮的好味道？';
+export const storyline = '你是「AI 食農大使」見習生。五週後，你的小組要做出一款「南投食農領地戰」遊戲，帶家人或學弟妹邊玩邊認識南投。每一週，都在為這個遊戲打造一個零件。';
+
+export const week1Plan = {
+  subQuestion: '大使要走訪鄉鎮，要怎麼讓 micro:bit 幫我們記住走了幾步？',
+  product: '「鄉鎮走訪計步器」：搖一搖就計步，走滿 10 步抵達一個鄉鎮。',
+  breakMinutes: 10,
+  schedule: [
+    ['0:00', '入場任務：看見期末遊戲、拿到驅動問題、分組與角色', 15],
+    ['0:15', '第 2～5 關：事件、變數、累加、搖晃計步', 50],
+    ['1:05', '休息', 10],
+    ['1:15', '第 6～9 關：抵達鄉鎮、停下來、重新出發、除錯偵探', 50],
+    ['2:05', '第 10～11 關：紅綠雙隊、LED 進度板（分層挑戰）', 35],
+    ['2:40', '第 12 關：大使日誌、作品展示與預告下週', 20]
+  ],
+  roles: [
+    ['🧭 領航員', '念出步驟、提醒下一步，手不碰滑鼠。'],
+    ['🛠️ 工程師', '操作滑鼠拖積木。每完成 3 關和領航員交換。'],
+    ['🔍 測試員', '每關完成後照「動手測試」操作，記下預測和實際結果。'],
+  ],
+  rubric: [
+    ['程式功能', '照步驟完成搖晃計步與 10 步抵達。', '能自己完成 B 鍵重新出發和紅綠雙隊，結果正確。', '完成 LED 進度板挑戰層，或做出自己的改造並說明。'],
+    ['預測與除錯', '能說出自己的預測。', '預測和結果不同時，能找出一個原因並修正。', '除錯偵探關找出 3 個錯誤，並解釋為什麼會錯。'],
+    ['團隊合作', '有輪流擔任角色。', '能幫隊友找出問題，不直接搶滑鼠。', '主動協助其他組，並說明自己的方法。'],
+    ['表達與反思', '日誌寫出今天學到的一件事。', '能用「事件、變數、條件」其中兩個詞說明作品。', '能說出計步器和期末遊戲的關係，並提出一個改進點子。']
+  ],
+  badge: { icon: '👣', name: '走訪者徽章', rule: '完成第 1～9 關（全體必達）即可獲得。完成挑戰層再加一顆 ⭐。' }
+};
+
+const T = (o) => o;
+
+export const week1Tasks = [
+  T({
+    title: '入場任務：成為食農大使', concept: '專題目標與 MakeCode 介面', durationMinutes: 15,
+    story: '期末，你們的小組要做出「南投食農領地戰」。今天先打造第一個零件：計步器。',
+    analogy: '就像出發旅行前，先看地圖、認識隊友，再檢查背包裡的工具。',
+    objectives: ['說出本課程的驅動問題', '完成分組並分配角色', '在 MakeCode 找到 A、B 按鈕與 5×5 LED'],
+    predict: '你覺得一塊只有 25 顆小燈和 2 個按鈕的板子，可以做出什麼遊戲？先和隊友說說看。',
+    steps: [
+      '老師投影「互動實驗室」裡的領地戰示範，紅綠兩隊各派一人上台試玩一局。',
+      '老師公布驅動問題：「我們要怎麼讓更多人認識南投 13 鄉鎮的好味道？」並說明五週後要對家人或學弟妹發表。',
+      '三人一組，分配「領航員、工程師、測試員」角色（每完成 3 關輪換）。',
+      '開啟官方 MakeCode，按「新增專案」，取名「鄉鎮走訪計步器」；確認介面為繁體中文。',
+      '找到左側模擬器的 A、B 按鈕和 25 顆 LED，中間是工具箱，右邊是積木工作區。'
+    ],
+    testing: ['每位組員都能指出模擬器、工具箱、工作區，以及 A、B 按鈕。'],
+    troubleshooting: ['介面是英文：點右上齒輪 → Language → 繁體中文。工具箱不見：確認上方切換在「積木（Blocks）」模式。'],
+    tiers: {
+      basic: ['完成分組與角色分配，建立專案。'],
+      plus: ['替小組取一個大使隊名，想一個代表你們的 LED 圖案。'],
+      challenge: ['猜猜看：期末遊戲需要哪些「零件」？列出 3 個。']
+    },
+    code: ''
+  }),
+  T({
+    title: 'A 鍵顯示愛心', concept: '事件', durationMinutes: 10,
+    story: '大使出發前，先讓板子跟大家打招呼。',
+    analogy: '門鈴被按下才會響；「事件」就是「發生某件事時才執行」。',
+    objectives: ['按 A 時 LED 顯示愛心'],
+    predict: '如果只把「顯示圖示」放在工作區空白處，沒有接在任何事件裡，按 A 會發生什麼事？',
+    steps: [
+      '從「輸入」拖出「當按鈕 A 被按下」事件。',
+      '從「基本」拖出「顯示圖示」，卡進按鈕 A 事件裡面（聽到喀一聲、顏色連在一起）。',
+      '在圖示選單選擇愛心。'
+    ],
+    testing: ['按模擬器 A，LED 顯示愛心。'],
+    troubleshooting: ['沒反應：檢查「顯示圖示」是否真的卡在 A 事件裡，而不是只靠在旁邊（旁邊的積木會變灰）。'],
+    tiers: {
+      basic: ['按 A 顯示愛心。'],
+      plus: ['加上按 B 顯示另一個圖示。'],
+      challenge: ['用「顯示指定 LED」自己畫一個代表南投的圖案（例如山、茶葉）。']
+    },
+    code: `input.onButtonPressed(Button.A, function () {
+    basic.showIcon(IconNames.Heart)
+})`
+  }),
+  T({
+    title: '建立「步數」盒子', concept: '變數', durationMinutes: 10,
+    story: '大使需要一本記事本，記住自己走了幾步。',
+    analogy: '變數像一個貼了名字的盒子，裡面放著目前的數字，可以隨時換掉。',
+    objectives: ['建立「步數」變數，啟動時設為 0 並顯示'],
+    predict: '把「步數設為 0」和「顯示數字 步數」放在「當啟動時」，按下重新啟動後，LED 會出現什麼？',
+    steps: [
+      '打開「變數」→「建立變數」，名稱輸入「步數」。',
+      '把「變數 步數 設為 0」放進「當啟動時」。',
+      '接著從「基本」拿「顯示數字」放在下面，再從「變數」把圓形的「步數」積木放進數字欄。'
+    ],
+    testing: ['重新啟動模擬器，LED 顯示 0。'],
+    troubleshooting: ['顯示的不是 0：檢查「設為」的數字；變數名稱要選同一個「步數」。'],
+    tiers: {
+      basic: ['啟動時顯示 0。'],
+      plus: ['把初始值改成 5，預測後再測試，最後改回 0。'],
+      challenge: ['再建立一個「鄉鎮數」變數，啟動時也設為 0。想想看它之後可以拿來做什麼？']
+    },
+    code: `let steps = 0
+steps = 0
+basic.showNumber(steps)`
+  }),
+  T({
+    title: 'A 鍵計步', concept: '變數累加', durationMinutes: 15,
+    story: '每按一次 A，大使就往前走一步。',
+    analogy: '每走一步，就往盒子裡多放一顆豆子。',
+    objectives: ['每按 A 一次，步數加 1', 'LED 顯示目前步數'],
+    predict: '如果 A 事件裡用的是「步數 設為 1」而不是「步數 改變 1」，按 A 三次會顯示什麼？',
+    steps: [
+      '保留「當啟動時」的步數設為 0。',
+      '在按鈕 A 事件裡，拿掉上一關的愛心，改放「變數」的「步數 改變 1」。',
+      '接上「基本」的「顯示數字」，放入「步數」。'
+    ],
+    testing: ['按 A 三次，依序看到 1、2、3。'],
+    troubleshooting: ['一直顯示 1：你用了「設為 1」，請換成「改變 1」。數字捲動時稍等一下再按。'],
+    tiers: {
+      basic: ['按 A 步數加 1。'],
+      plus: ['改成每按一次加 2，預測按 3 次會顯示多少，再測試。'],
+      challenge: ['讓 B 鍵可以「退一步」（步數減 1）。如果步數已經是 0，再按 B 會怎樣？要不要處理？']
+    },
+    code: `let steps = 0
+basic.showNumber(steps)
+input.onButtonPressed(Button.A, function () {
+    steps += 1
+    basic.showNumber(steps)
+})`
+  }),
+  T({
+    title: '搖一搖，真的計步！', concept: '感測器：搖晃手勢', durationMinutes: 15,
+    story: '真正的大使是用腳走路的！讓 micro:bit 感覺到你在走。',
+    analogy: 'micro:bit 裡有一個「加速度感測器」，就像人的內耳平衡感，能感覺到被搖動。',
+    objectives: ['搖晃 micro:bit 時步數加 1'],
+    predict: 'A 鍵計步和搖晃計步，哪一種比較像真正的計步器？為什麼？',
+    steps: [
+      '從「輸入」拖出「當 搖晃 時」積木（下拉選單選「搖晃」，英文介面為 on shake）。',
+      '把 A 事件裡的「步數 改變 1」和「顯示數字」複製一份，放進搖晃事件裡（A 鍵保留，方便測試）。',
+      '模擬器上會多出一個「SHAKE」按鈕，點它就是在搖板子。有實體板的組別可以下載到板子，綁在手腕上原地踏步。'
+    ],
+    testing: ['點模擬器 SHAKE 三次，步數變成 3；按 A 也還能加 1。'],
+    troubleshooting: ['找不到 SHAKE 按鈕：搖晃事件要先放進工作區，模擬器才會出現。實體板太敏感或不靈敏：走路時固定好板子，動作明顯一點。'],
+    tiers: {
+      basic: ['搖晃時步數加 1。'],
+      plus: ['全組原地踏步 20 秒，比較誰的步數最多，討論：計步器準不準？'],
+      challenge: ['試試「當 傾斜向左／向右 時」等其他手勢，設計一個「左腳右腳交替才算一步」的規則。']
+    },
+    code: `let steps = 0
+basic.showNumber(steps)
+input.onButtonPressed(Button.A, function () {
+    steps += 1
+    basic.showNumber(steps)
+})
+input.onGesture(Gesture.Shake, function () {
+    steps += 1
+    basic.showNumber(steps)
+})`
+  }),
+  T({
+    title: '走滿 10 步，抵達鄉鎮', concept: '條件判斷', durationMinutes: 15,
+    story: '每走滿 10 步，就抵達南投的一個鄉鎮！',
+    analogy: '集滿 10 枚貼紙，才能換一個獎品；條件成立才做某件事。',
+    objectives: ['步數達到 10 時顯示房子圖示（抵達鄉鎮）'],
+    predict: '如果把條件寫成「步數 > 10」，第 10 步會顯示什麼？',
+    steps: [
+      '從「邏輯」拖出「如果…否則」，放在搖晃事件裡「步數 改變 1」的下面。',
+      '條件放「邏輯」的比較積木，設成「步數 ≥ 10」。',
+      '「如果」裡放「顯示圖示」選房子；「否則」裡放「顯示數字 步數」。A 鍵事件也照樣修改。'
+    ],
+    testing: ['第 9 步顯示 9，第 10 步顯示房子。（第 11 步還會繼續加，下一關處理。）'],
+    troubleshooting: ['第一步就出現房子：檢查比較符號和數字 10。條件要放在「改變 1」之後。'],
+    tiers: {
+      basic: ['第 10 步顯示房子。'],
+      plus: ['抵達時先顯示房子，暫停 1 秒，再捲動顯示「NANTOU」。'],
+      challenge: ['用「鄉鎮數」變數：每走滿 10 步，鄉鎮數加 1，步數歸零重新走。']
+    },
+    code: `let steps = 0
+basic.showNumber(steps)
+input.onGesture(Gesture.Shake, function () {
+    steps += 1
+    if (steps >= 10) {
+        basic.showIcon(IconNames.House)
+    } else {
+        basic.showNumber(steps)
+    }
+})`
+  }),
+  T({
+    title: '抵達就停下來', concept: '狀態控制', durationMinutes: 10,
+    story: '抵達鄉鎮後要停下來休息，不能一直往前衝。',
+    analogy: '水杯滿了就停止倒水，不然會溢出來。',
+    objectives: ['步數到 10 之後不再增加'],
+    predict: '如果外層條件寫「步數 ≤ 10」，連搖 12 次後步數會停在多少？',
+    steps: [
+      '在搖晃事件的最外層，加上「如果 步數 < 10」。',
+      '把「步數 改變 1」和上一關整個「如果…否則」都放進這個條件裡。',
+      'A 鍵事件也做一樣的修改。'
+    ],
+    testing: ['連搖 12 次，最後停在房子，步數維持 10。'],
+    troubleshooting: ['步數超過 10：確認「改變 1」真的在「步數 < 10」條件裡面。'],
+    tiers: {
+      basic: ['步數停在 10。'],
+      plus: ['步數已滿時再搖，播放一小段提示（例如顯示 X 圖示）提醒「已抵達」。'],
+      challenge: ['說明為什麼不能用「步數 ≤ 10」？用預測和實際結果證明。']
+    },
+    code: `let steps = 0
+basic.showNumber(steps)
+input.onGesture(Gesture.Shake, function () {
+    if (steps < 10) {
+        steps += 1
+        if (steps >= 10) {
+            basic.showIcon(IconNames.House)
+        } else {
+            basic.showNumber(steps)
+        }
+    }
+})`
+  }),
+  T({
+    title: 'B 鍵重新出發', concept: '變數重設', durationMinutes: 10,
+    story: '休息夠了，前往下一個鄉鎮！',
+    analogy: '桌遊重新開局，要把計分板歸零，不是只把棋盤擦乾淨。',
+    objectives: ['按 B 步數歸零，可以重新計步'],
+    predict: '如果 B 鍵只放「清除畫面」，沒有把步數設為 0，按 B 之後再搖一下，會顯示多少？',
+    steps: [
+      '從「輸入」拖出新的按鈕事件，把按鈕改成 B。',
+      '放入「變數 步數 設為 0」。',
+      '接上「顯示數字 步數」。'
+    ],
+    testing: ['搖到房子後按 B，顯示 0；再搖一下變成 1。'],
+    troubleshooting: ['B 沒反應：檢查事件下拉選單是不是選到 B。按 B 後數字沒歸零：確認有「設為 0」，不是只清除畫面。'],
+    tiers: {
+      basic: ['按 B 歸零。'],
+      plus: ['測試員依序測試「搖 → B → 搖」，記錄每一步的預測和結果。'],
+      challenge: ['重新出發時，先顯示一個箭頭動畫（連續顯示 2～3 個圖示）再顯示 0。']
+    },
+    code: `input.onButtonPressed(Button.B, function () {
+    steps = 0
+    basic.showNumber(steps)
+})`
+  }),
+  T({
+    title: '除錯偵探：找出 3 個錯誤', concept: '除錯（Debug）', durationMinutes: 15,
+    story: '有一位見習大使的計步器壞掉了，請你們當偵探找出原因！',
+    analogy: '偵探不會亂猜，先看線索（實際結果），再推理是哪裡出錯。',
+    objectives: ['找出並修正程式中的 3 個錯誤', '說出每個錯誤造成的現象'],
+    predict: '先不要執行！只看下面的程式，預測：搖 3 次會顯示什麼？第 10 步會出現房子嗎？按 B 後再搖會顯示多少？',
+    bug: {
+      intro: '老師把這段「有問題的程式」貼到 MakeCode（JavaScript 模式貼上，再切回積木），或直接投影下面的積木描述：',
+      blocks: [
+        '當啟動時：步數 設為 0、顯示數字 步數',
+        '當 搖晃 時：如果 步數 < 10 → 步數 設為 1 → 如果 步數 > 10 顯示房子，否則顯示數字 步數',
+        '當按鈕 B 被按下：清除畫面'
+      ],
+      answers: [
+        '「步數 設為 1」應改成「步數 改變 1」，不然永遠顯示 1。',
+        '「步數 > 10」應改成「步數 ≥ 10」，不然第 10 步不會出現房子。',
+        'B 鍵只清除畫面，沒有「步數 設為 0」，重新出發後步數會接著舊的數字。'
+      ]
+    },
+    steps: [
+      '每組先寫下預測（測試員負責記錄）。',
+      '執行有問題的程式，比對預測和實際結果，圈出「不一樣的地方」。',
+      '一次只改一個地方，改完馬上測試，直到 3 個錯誤都修好。',
+      '各組派一人分享：你們先找到哪一個？是怎麼發現的？'
+    ],
+    testing: ['修好後：搖 3 次顯示 3；第 10 步出現房子；按 B 顯示 0，再搖一下顯示 1。'],
+    troubleshooting: ['找不到錯誤時，看「實際結果」：一直是 1 → 檢查累加；沒出現房子 → 檢查比較符號；按 B 數字沒歸零 → 檢查 B 事件。'],
+    tiers: {
+      basic: ['找到並修好 2 個錯誤。'],
+      plus: ['3 個錯誤全部修好，並說出每個錯誤的現象。'],
+      challenge: ['自己設計一個「有 1 個錯誤」的程式，交換給別組來破案。']
+    },
+    code: `// 有問題的程式（給老師貼上用）
+let steps = 0
+basic.showNumber(steps)
+input.onGesture(Gesture.Shake, function () {
+    if (steps < 10) {
+        steps = 1
+        if (steps > 10) {
+            basic.showIcon(IconNames.House)
+        } else {
+            basic.showNumber(steps)
+        }
+    }
+})
+input.onButtonPressed(Button.B, function () {
+    basic.clearScreen()
+})`
+  }),
+  T({
+    title: '一機紅綠雙隊', concept: '兩個變數分開計數', durationMinutes: 15,
+    story: '大使分成紅隊和綠隊，比賽誰先抵達鄉鎮！這就是期末領地戰的雛形。',
+    analogy: '兩隊各有自己的存錢筒，錢不能投錯筒。',
+    objectives: ['A 讓紅隊前進、B 讓綠隊前進', 'A+B 同時按讓兩隊重新出發'],
+    predict: '如果 B 事件裡還留著上一關的「步數 設為 0」，按 B 會發生什麼事？',
+    steps: [
+      '另存一份新專案「紅綠雙隊」。建立「紅隊步數」「綠隊步數」兩個變數，啟動時都設為 0。',
+      'A 事件：如果紅隊步數 < 10，紅隊步數改變 1。B 事件：綠隊做一樣的事（記得刪掉上一關的歸零）。',
+      '新增「當按鈕 A+B 被按下」：兩個變數都設為 0。',
+      '每次按鍵後，用「顯示數字」顯示剛剛前進那一隊的步數。'
+    ],
+    testing: ['A 按 2 次、B 按 1 次，兩隊變數為 2 和 1；按 A+B 後都變 0。'],
+    troubleshooting: ['按 B 結果紅隊也變了：檢查 B 事件裡用的是不是「綠隊步數」。模擬器同時按 A+B：點模擬器上的「A+B」按鈕。'],
+    tiers: {
+      basic: ['A、B 分別讓兩隊前進，A+B 重設。'],
+      plus: ['任一隊先到 10 時，顯示該隊的代表圖示（例如紅隊顯示愛心、綠隊顯示笑臉）。'],
+      challenge: ['討論並設計一個「公平規則」：如果某一隊一直狂按，要怎麼讓比賽更公平？']
+    },
+    code: `let red = 0
+let green = 0
+input.onButtonPressed(Button.A, function () {
+    if (red < 10) {
+        red += 1
+    }
+    basic.showNumber(red)
+})
+input.onButtonPressed(Button.B, function () {
+    if (green < 10) {
+        green += 1
+    }
+    basic.showNumber(green)
+})
+input.onButtonPressed(Button.AB, function () {
+    red = 0
+    green = 0
+    basic.clearScreen()
+})`
+  }),
+  T({
+    title: 'LED 進度板（分層挑戰）', concept: '座標與重複', durationMinutes: 20,
+    story: '不用看數字，一眼就知道兩隊誰領先！',
+    analogy: '教室座位：x 是第幾欄（往右），y 是第幾排（往下），而且從 0 開始數。',
+    objectives: ['依自己的程度，完成基本、進階或挑戰其中一層'],
+    predict: '「點亮 x=4、y=0」會亮在 LED 的哪個角落？先用手指在板子圖上指出來。',
+    steps: [
+      '🌱 基本：在單人計步器中，把「顯示數字」換成 LED 分類的「長條圖」積木（英文 plot bar graph），數值放步數、最大值填 10。',
+      '🌿 進階：在雙隊專案中，用「點亮 x, y」手動點燈：紅隊步數 ≥ 1 點亮 (0,0)、≥ 2 點亮 (1,0)……先做 5 格，感受一下「好累」。',
+      '🌳 挑戰：用「迴圈」從 0 數到 9，如果索引 < 紅隊步數，點亮 x = 索引 ÷ 5 的餘數、y = 索引 ÷ 5 無條件捨去；綠隊一樣，但 y 再加 3。每次更新前先清除畫面。',
+      '做完的組別，比較進階和挑戰兩種寫法：哪一種比較好改？如果要做 100 步呢？'
+    ],
+    testing: ['基本：步數越多，長條越高。進階：紅隊 3 步亮上排 3 顆。挑戰：A 三次、B 六次，上兩排共 3 燈、下兩排共 6 燈、中間一排全暗。'],
+    troubleshooting: ['座標只能是 0～4；第一排是 y=0。綠隊跑到中間：檢查 y 有沒有加 3。實體 LED 是單色的，網頁上的紅綠只是教學示意。'],
+    tiers: {
+      basic: ['用長條圖積木顯示單隊進度。'],
+      plus: ['手動點燈做出紅隊 5 格進度。'],
+      challenge: ['用迴圈完成雙隊 10 格進度板，中間一排留白；再把重畫的部分整理成「函式」。']
+    },
+    code: `// 挑戰層參考
+let red = 0
+let green = 0
+function draw () {
+    basic.clearScreen()
+    for (let i = 0; i <= 9; i++) {
+        if (i < red) {
+            led.plot(i % 5, Math.floor(i / 5))
+        }
+        if (i < green) {
+            led.plot(i % 5, Math.floor(i / 5) + 3)
+        }
+    }
+}
+input.onButtonPressed(Button.A, function () {
+    if (red < 10) { red += 1 }
+    draw()
+})
+input.onButtonPressed(Button.B, function () {
+    if (green < 10) { green += 1 }
+    draw()
+})
+input.onButtonPressed(Button.AB, function () {
+    red = 0
+    green = 0
+    draw()
+})`
+  }),
+  T({
+    title: '大使日誌與作品展示', concept: '反思與分享', durationMinutes: 20,
+    story: '今天你們造好了領地戰的第一個零件。下週，要讓你的腳步「走進網頁」！',
+    analogy: '旅行回來寫日記，下次出發才會走得更好。',
+    objectives: ['完成大使日誌三個問題', '在組間展示中介紹自己的作品'],
+    predict: '你覺得下週要怎麼把 micro:bit 的步數，變成網頁上的進度條？',
+    steps: [
+      '每組在 MakeCode 按「分享」，取得作品連結（或依老師要求截圖）。',
+      '寫大使日誌：①今天我學會的一個新概念是＿＿。②我遇到的一個錯誤是＿＿，我這樣修好它＿＿。③計步器在期末遊戲裡可以用來＿＿。',
+      '作品走廊：各組把作品開在螢幕上，輪流到別組試玩 1 分鐘，留下一句「我喜歡…」和一句「如果…會更好」。',
+      '老師預告第二週，並頒發「走訪者徽章」。'
+    ],
+    testing: ['日誌三題都有寫；至少試玩 2 組作品並留下回饋。'],
+    troubleshooting: ['MakeCode 無法分享：改用截圖，截下積木和模擬器畫面。'],
+    tiers: {
+      basic: ['完成日誌三題。'],
+      plus: ['在日誌裡用「事件、變數、條件」其中兩個詞說明作品。'],
+      challenge: ['提出一個「期末遊戲可以加的規則」，例如某個鄉鎮要走 15 步才能抵達。']
+    },
+    code: ''
+  })
+];
