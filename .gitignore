@@ -6,3 +6,6 @@ dist/
 
 # 教師範例程式明文（只放加密檔 src/data/teacher-vault.js 上網）
 teacher-src/
+
+# 美工原始大圖與備份（只留在本機，不上傳）
+design-src/
