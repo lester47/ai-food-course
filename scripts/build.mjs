@@ -9,6 +9,7 @@ const v=(process.env.GITHUB_SHA||Date.now().toString(36)).slice(0,10);
 const bust=s=>s.replace(/(from\s*|import\s*\(\s*)(['"])(\.{1,2}\/[^'"?]+\.js)\2/g,`$1$2$3?v=${v}$2`);
 const walk=async u=>{for(const e of await readdir(u,{withFileTypes:true})){const c=new URL(e.name+(e.isDirectory()?'/':''),u);if(e.isDirectory())await walk(c);else if(e.name.endsWith('.js'))await writeFile(c,bust(await readFile(c,'utf8')));}};
 await walk(new URL('src/',dist));
+await writeFile(new URL('version.json',dist),JSON.stringify({v}));
 const html=new URL('index.html',dist);
 await writeFile(html,(await readFile(html,'utf8')).replace('./src/styles.css',`./src/styles.css?v=${v}`).replace('./src/app.js',`./src/app.js?v=${v}`));
 console.log(`靜態網站已建立：dist/（版本 ${v}）。支援相對資源及 hash 子頁路由。`);

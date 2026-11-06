@@ -11,6 +11,8 @@ import {SerialConnection} from './services/serial.js';
 import {teacherVault} from './data/teacher-vault.js';
 import {unlockVault} from './services/teacher-vault-client.js';
 let vaultData=null;
+const PADLET_URL='https://padlet.com/lester471/padlet-s0256cilue1jhcdrbzv9';
+const navEl=document.querySelector('header nav');if(navEl)navEl.innerHTML=`<a href="#/weeks">五週課程</a><a href="#/practice/led">互動實驗室</a><a href="#/gallery">作品展示</a><a href="#/help">操作說明</a><a class="nav-submit" href="#/submit">📮 繳交作業</a><a class="nav-padlet" href="${PADLET_URL}" target="_blank" rel="noopener noreferrer" title="在新分頁開啟班級 Padlet：即時互動、貼截圖">💬 Padlet 互動牆 ↗</a><a class="teacher" href="#/teacher">教師入口 ↗</a>`;
 const main=document.querySelector('main');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let progress={};
