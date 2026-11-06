@@ -28,3 +28,47 @@ html,body{overflow-x:clip}
 .nav-submit{background:#fff3c4;border:1px solid #e8c95a;color:#6b4c00!important;padding:6px 14px;border-radius:999px;font-weight:700}.nav-submit:hover,.nav-submit.current{background:#ffe792;text-decoration:none!important}.submit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}.submit-card h3{margin:12px 0 6px}.submit-card.open{border:2px solid #3b8159;background:#f4f9ef}.submit-card .button{display:flex;margin:12px 0 4px}
 
 .nav-padlet,.nav-padlet.current{text-decoration:none!important}.nav-padlet{background:#e8f1fb;border:1px solid #9fc0e3;color:#24507c!important;padding:6px 14px;border-radius:999px;font-weight:700}.nav-padlet:hover{background:#d5e6f8;text-decoration:none!important}
+
+/* ===== 視覺改版：南投走訪冒險地圖 ===== */
+.hero .hero-swipe{display:none}
+:root{--sky:#cfeaf2;--tea:#2e7d4f;--forest:#1d4a36;--lake:#3b8db5;--sun:#f6c544;--red-team:#d6493a}
+body{background:#f5f9ef;font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;overflow-x:clip}
+h1,h2,h3,.brand>span,.week-card h3,.page-heading h1{font-family:'LXGW WenKai TC','Noto Sans TC',serif;letter-spacing:0}
+.hero{position:relative;width:100vw;margin-left:calc(50% - 50vw);aspect-ratio:1440/700;min-height:0;display:block;padding:0;overflow:hidden;border-bottom:6px solid var(--forest)}
+.hero-scene-wrap{position:absolute;inset:0}
+.hero-scene{display:block;width:100%;height:100%}
+.hero-copy{position:relative;z-index:2;max-width:1440px;margin:0 auto;padding:clamp(28px,3.4vw,56px) 5% 0}
+.hero-copy>*{max-width:560px}
+.hero-kicker{display:inline-block;background:#fffdf4;border:1.5px solid var(--forest);color:var(--forest);border-radius:999px;padding:4px 14px;font-size:14px;font-weight:700}
+.hero h1{font-size:clamp(44px,5.4vw,80px);line-height:1.15;margin:16px 0 10px;color:var(--forest);font-weight:700}
+.hero-lead{font-family:'LXGW WenKai TC',serif;font-size:clamp(20px,1.9vw,28px);line-height:1.55;color:var(--ink);max-width:500px!important}
+.hero .hero-body{font-size:15px;color:#36574a;line-height:1.9;margin-top:10px;max-width:470px}
+.hero .actions{margin:20px 0 14px}
+.hero-facts{display:flex;gap:10px;flex-wrap:wrap;margin-top:0}
+.hero-facts span{background:#ffffffcc;border-radius:999px;padding:3px 12px;font-size:12px;color:var(--forest)}
+.fp{opacity:0;animation:fp-in .35s ease-out forwards;animation-delay:calc(var(--i) * 110ms + 400ms)}
+@keyframes fp-in{from{opacity:0;transform-box:fill-box}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.fp{opacity:1;animation:none}}
+.dq-banner{position:relative;overflow:hidden;background:linear-gradient(160deg,#1d4a36,#2e7d4f);padding-bottom:70px;margin-top:28px}
+.dq-banner .ridge{position:absolute;left:0;right:0;bottom:0;width:100%;height:60px}
+.dq-banner h2{font-size:clamp(24px,2.8vw,36px)}
+.week-card{overflow:hidden;padding-top:0}
+.week-art{display:block;width:calc(100% + 34px);height:110px;margin:0 -17px 14px}
+.week-card .card-top{margin-bottom:4px}
+.week-card:hover{border-color:var(--tea);box-shadow:0 8px 0 #2e7d4f22}
+.page-heading h1{color:var(--forest)}
+@media(max-width:1180px){
+ .hero{aspect-ratio:auto;display:flex;flex-direction:column;background:#cfeaf2}
+ .hero-copy{order:1;padding:32px 5% 8px;width:100%}
+ .hero-copy>*{max-width:680px}
+ .hero-scene-wrap{order:2;position:relative;inset:auto;overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;min-width:0;align-self:stretch}
+ .hero-scene{width:100%;height:auto;margin-top:-13vw}
+}
+@media(max-width:760px){
+ .hero h1{font-size:46px}
+ .hero-scene-wrap{height:300px;overflow-y:hidden}
+ .hero-scene{width:860px;height:418px!important;max-width:none;margin-top:-118px}
+ .hero .hero-swipe{display:block;order:3;width:100%;max-width:none;margin:0;text-align:center;font-size:12px;line-height:1.6;color:#fff;background:var(--forest);padding:6px 0 2px}
+ .dq-banner{padding:24px 20px 64px}
+}
+
