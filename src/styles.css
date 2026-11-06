@@ -21,3 +21,6 @@ html,body{overflow-x:clip}
 .bug-panel{border:2px dashed #b95c43;background:#fff6f2}.bug-panel h2{color:#9a3f2a}
 .code-panel pre{margin:10px 0}.code-panel button{margin-top:4px}
 @media(max-width:900px){.plan-grid,.tier-grid{grid-template-columns:1fr}.story-banner{flex-direction:column;align-items:flex-start}}
+
+.gate-panel{max-width:460px}.gate-panel form{flex-direction:column;align-items:stretch}.gate-panel label{font-weight:700}
+.materials-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;flex-wrap:wrap}.week-materials summary{font-size:17px}.material{border-top:1px solid var(--line);padding:16px 0}.material-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.material .actions{margin:8px 0}.answer-box{background:#fff6f2;border:1px dashed #b95c43;border-radius:8px;padding:10px 16px;margin-top:8px}.teacher-hint{margin-top:14px}

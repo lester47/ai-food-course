@@ -52,8 +52,7 @@ export const week1Tasks = [
       basic: ['完成分組與角色分配，建立專案。'],
       plus: ['替小組取一個大使隊名，想一個代表你們的 LED 圖案。'],
       challenge: ['猜猜看：期末遊戲需要哪些「零件」？列出 3 個。']
-    },
-    code: ''
+    }
   }),
   T({
     title: 'A 鍵顯示愛心', concept: '事件', durationMinutes: 10,
@@ -72,10 +71,7 @@ export const week1Tasks = [
       basic: ['按 A 顯示愛心。'],
       plus: ['加上按 B 顯示另一個圖示。'],
       challenge: ['用「顯示指定 LED」自己畫一個代表南投的圖案（例如山、茶葉）。']
-    },
-    code: `input.onButtonPressed(Button.A, function () {
-    basic.showIcon(IconNames.Heart)
-})`
+    }
   }),
   T({
     title: '建立「步數」盒子', concept: '變數', durationMinutes: 10,
@@ -94,10 +90,7 @@ export const week1Tasks = [
       basic: ['啟動時顯示 0。'],
       plus: ['把初始值改成 5，預測後再測試，最後改回 0。'],
       challenge: ['再建立一個「鄉鎮數」變數，啟動時也設為 0。想想看它之後可以拿來做什麼？']
-    },
-    code: `let steps = 0
-steps = 0
-basic.showNumber(steps)`
+    }
   }),
   T({
     title: 'A 鍵計步', concept: '變數累加', durationMinutes: 15,
@@ -116,13 +109,7 @@ basic.showNumber(steps)`
       basic: ['按 A 步數加 1。'],
       plus: ['改成每按一次加 2，預測按 3 次會顯示多少，再測試。'],
       challenge: ['讓 B 鍵可以「退一步」（步數減 1）。如果步數已經是 0，再按 B 會怎樣？要不要處理？']
-    },
-    code: `let steps = 0
-basic.showNumber(steps)
-input.onButtonPressed(Button.A, function () {
-    steps += 1
-    basic.showNumber(steps)
-})`
+    }
   }),
   T({
     title: '搖一搖，真的計步！', concept: '感測器：搖晃手勢', durationMinutes: 15,
@@ -141,17 +128,7 @@ input.onButtonPressed(Button.A, function () {
       basic: ['搖晃時步數加 1。'],
       plus: ['全組原地踏步 20 秒，比較誰的步數最多，討論：計步器準不準？'],
       challenge: ['試試「當 傾斜向左／向右 時」等其他手勢，設計一個「左腳右腳交替才算一步」的規則。']
-    },
-    code: `let steps = 0
-basic.showNumber(steps)
-input.onButtonPressed(Button.A, function () {
-    steps += 1
-    basic.showNumber(steps)
-})
-input.onGesture(Gesture.Shake, function () {
-    steps += 1
-    basic.showNumber(steps)
-})`
+    }
   }),
   T({
     title: '走滿 10 步，抵達鄉鎮', concept: '條件判斷', durationMinutes: 15,
@@ -170,17 +147,7 @@ input.onGesture(Gesture.Shake, function () {
       basic: ['第 10 步顯示房子。'],
       plus: ['抵達時先顯示房子，暫停 1 秒，再捲動顯示「NANTOU」。'],
       challenge: ['用「鄉鎮數」變數：每走滿 10 步，鄉鎮數加 1，步數歸零重新走。']
-    },
-    code: `let steps = 0
-basic.showNumber(steps)
-input.onGesture(Gesture.Shake, function () {
-    steps += 1
-    if (steps >= 10) {
-        basic.showIcon(IconNames.House)
-    } else {
-        basic.showNumber(steps)
     }
-})`
   }),
   T({
     title: '抵達就停下來', concept: '狀態控制', durationMinutes: 10,
@@ -199,19 +166,7 @@ input.onGesture(Gesture.Shake, function () {
       basic: ['步數停在 10。'],
       plus: ['步數已滿時再搖，播放一小段提示（例如顯示 X 圖示）提醒「已抵達」。'],
       challenge: ['說明為什麼不能用「步數 ≤ 10」？用預測和實際結果證明。']
-    },
-    code: `let steps = 0
-basic.showNumber(steps)
-input.onGesture(Gesture.Shake, function () {
-    if (steps < 10) {
-        steps += 1
-        if (steps >= 10) {
-            basic.showIcon(IconNames.House)
-        } else {
-            basic.showNumber(steps)
-        }
     }
-})`
   }),
   T({
     title: 'B 鍵重新出發', concept: '變數重設', durationMinutes: 10,
@@ -230,11 +185,7 @@ input.onGesture(Gesture.Shake, function () {
       basic: ['按 B 歸零。'],
       plus: ['測試員依序測試「搖 → B → 搖」，記錄每一步的預測和結果。'],
       challenge: ['重新出發時，先顯示一個箭頭動畫（連續顯示 2～3 個圖示）再顯示 0。']
-    },
-    code: `input.onButtonPressed(Button.B, function () {
-    steps = 0
-    basic.showNumber(steps)
-})`
+    }
   }),
   T({
     title: '除錯偵探：找出 3 個錯誤', concept: '除錯（Debug）', durationMinutes: 15,
@@ -243,16 +194,11 @@ input.onGesture(Gesture.Shake, function () {
     objectives: ['找出並修正程式中的 3 個錯誤', '說出每個錯誤造成的現象'],
     predict: '先不要執行！只看下面的程式，預測：搖 3 次會顯示什麼？第 10 步會出現房子嗎？按 B 後再搖會顯示多少？',
     bug: {
-      intro: '老師把這段「有問題的程式」貼到 MakeCode（JavaScript 模式貼上，再切回積木），或直接投影下面的積木描述：',
+      intro: '下面是見習大使的程式（積木描述）。老師會把這段程式放到 MakeCode 給你們執行：',
       blocks: [
         '當啟動時：步數 設為 0、顯示數字 步數',
         '當 搖晃 時：如果 步數 < 10 → 步數 設為 1 → 如果 步數 > 10 顯示房子，否則顯示數字 步數',
         '當按鈕 B 被按下：清除畫面'
-      ],
-      answers: [
-        '「步數 設為 1」應改成「步數 改變 1」，不然永遠顯示 1。',
-        '「步數 > 10」應改成「步數 ≥ 10」，不然第 10 步不會出現房子。',
-        'B 鍵只清除畫面，沒有「步數 設為 0」，重新出發後步數會接著舊的數字。'
       ]
     },
     steps: [
@@ -267,23 +213,7 @@ input.onGesture(Gesture.Shake, function () {
       basic: ['找到並修好 2 個錯誤。'],
       plus: ['3 個錯誤全部修好，並說出每個錯誤的現象。'],
       challenge: ['自己設計一個「有 1 個錯誤」的程式，交換給別組來破案。']
-    },
-    code: `// 有問題的程式（給老師貼上用）
-let steps = 0
-basic.showNumber(steps)
-input.onGesture(Gesture.Shake, function () {
-    if (steps < 10) {
-        steps = 1
-        if (steps > 10) {
-            basic.showIcon(IconNames.House)
-        } else {
-            basic.showNumber(steps)
-        }
     }
-})
-input.onButtonPressed(Button.B, function () {
-    basic.clearScreen()
-})`
   }),
   T({
     title: '一機紅綠雙隊', concept: '兩個變數分開計數', durationMinutes: 15,
@@ -303,26 +233,7 @@ input.onButtonPressed(Button.B, function () {
       basic: ['A、B 分別讓兩隊前進，A+B 重設。'],
       plus: ['任一隊先到 10 時，顯示該隊的代表圖示（例如紅隊顯示愛心、綠隊顯示笑臉）。'],
       challenge: ['討論並設計一個「公平規則」：如果某一隊一直狂按，要怎麼讓比賽更公平？']
-    },
-    code: `let red = 0
-let green = 0
-input.onButtonPressed(Button.A, function () {
-    if (red < 10) {
-        red += 1
     }
-    basic.showNumber(red)
-})
-input.onButtonPressed(Button.B, function () {
-    if (green < 10) {
-        green += 1
-    }
-    basic.showNumber(green)
-})
-input.onButtonPressed(Button.AB, function () {
-    red = 0
-    green = 0
-    basic.clearScreen()
-})`
   }),
   T({
     title: 'LED 進度板（分層挑戰）', concept: '座標與重複', durationMinutes: 20,
@@ -342,34 +253,7 @@ input.onButtonPressed(Button.AB, function () {
       basic: ['用長條圖積木顯示單隊進度。'],
       plus: ['手動點燈做出紅隊 5 格進度。'],
       challenge: ['用迴圈完成雙隊 10 格進度板，中間一排留白；再把重畫的部分整理成「函式」。']
-    },
-    code: `// 挑戰層參考
-let red = 0
-let green = 0
-function draw () {
-    basic.clearScreen()
-    for (let i = 0; i <= 9; i++) {
-        if (i < red) {
-            led.plot(i % 5, Math.floor(i / 5))
-        }
-        if (i < green) {
-            led.plot(i % 5, Math.floor(i / 5) + 3)
-        }
     }
-}
-input.onButtonPressed(Button.A, function () {
-    if (red < 10) { red += 1 }
-    draw()
-})
-input.onButtonPressed(Button.B, function () {
-    if (green < 10) { green += 1 }
-    draw()
-})
-input.onButtonPressed(Button.AB, function () {
-    red = 0
-    green = 0
-    draw()
-})`
   }),
   T({
     title: '大使日誌與作品展示', concept: '反思與分享', durationMinutes: 20,
@@ -389,7 +273,6 @@ input.onButtonPressed(Button.AB, function () {
       basic: ['完成日誌三題。'],
       plus: ['在日誌裡用「事件、變數、條件」其中兩個詞說明作品。'],
       challenge: ['提出一個「期末遊戲可以加的規則」，例如某個鄉鎮要走 15 步才能抵達。']
-    },
-    code: ''
+    }
   })
 ];

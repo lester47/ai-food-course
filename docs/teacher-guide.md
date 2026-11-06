@@ -42,3 +42,18 @@ images: [
 ## 備份
 
 備份原始碼、授權截圖與來源紀錄；私人表單回應留在校方核准的位置，不混入公開 Git。每次修改先跑測試與 build，再在獨立預覽檢查。原穩定版另行備份，不直接覆寫。
+
+## 教師入口與參考程式（密碼保護）
+
+- 網站「教師入口」需輸入教師密碼，才會顯示每個單元的參考程式（JavaScript）與除錯偵探答案，可複製或下載成 `.js` 檔。
+- 程式內容以 AES-256-GCM 加密後才放上網站（`src/data/teacher-vault.js`），網頁原始碼裡沒有密碼，也沒有程式明文；學生按 F12 只看得到亂碼。
+- 明文放在 `teacher-src/`（只在老師電腦上，**不上傳 GitHub**）：
+  - `teacher-src/materials.mjs`：所有單元的程式與說明
+  - `teacher-src/w1.json`：第一週程式與破案答案
+  - `teacher-src/範例程式/`：每個單元一個 `.js` 檔，方便直接打開
+- 修改程式或更換密碼：編輯 `teacher-src/` 後，在專案資料夾執行（PowerShell）：
+  ```
+  $env:TEACHER_PASSWORD="新密碼"; npm run encrypt-teacher
+  ```
+  再把更新後的 `src/data/teacher-vault.js` 推上 GitHub。
+- 限制：這是靜態網站的前端加密，足以防止學生偷看；但密碼若太短太簡單，有心人仍可離線猜測。請不要把密碼告訴學生，也不要寫在黑板或投影片上。
