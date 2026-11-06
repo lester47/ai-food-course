@@ -4,7 +4,7 @@
 //   macOS/Linux：TEACHER_PASSWORD="你的密碼" npm run encrypt-teacher
 import {webcrypto as crypto} from 'node:crypto';
 import {writeFile} from 'node:fs/promises';
-import {materials} from '../teacher-src/materials.mjs';
+import {materials, teacherLinks} from '../teacher-src/materials.mjs';
 
 const password = process.env.TEACHER_PASSWORD;
 if (!password) { console.error('請先設定 TEACHER_PASSWORD 環境變數。'); process.exit(1); }
@@ -16,7 +16,7 @@ const salt = crypto.getRandomValues(new Uint8Array(16));
 const iv = crypto.getRandomValues(new Uint8Array(12));
 const base = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
 const key = await crypto.subtle.deriveKey({name: 'PBKDF2', salt, iterations: ITERATIONS, hash: 'SHA-256'}, base, {name: 'AES-GCM', length: 256}, false, ['encrypt']);
-const payload = enc.encode(JSON.stringify({version: 1, createdAt: new Date().toISOString(), materials}));
+const payload = enc.encode(JSON.stringify({version: 1, createdAt: new Date().toISOString(), materials, links: teacherLinks || []}));
 const data = await crypto.subtle.encrypt({name: 'AES-GCM', iv}, key, payload);
 
 const out = `// 自動產生：教師範例程式的加密檔（AES-256-GCM，PBKDF2-SHA256 ${ITERATIONS} 次）。
