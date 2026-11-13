@@ -350,3 +350,11 @@ header nav .nav-race{background:#fde8e4;color:#8f2a1f;font-weight:700}
 .bonus-card .task-num{background:var(--sun);color:#4a3a00}
 .bonus-card small{display:block;color:var(--muted)}
 .bonus-unlock{display:inline-block;background:#fff3d6;border:2px solid var(--sun);border-radius:12px;padding:6px 12px;font-weight:700}
+
+/* ===== Claude：教師入口 積木＋JavaScript 左右並列（2026-11-13） ===== */
+.material-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start;margin:8px 0}
+.material-pair .mat-blocks{background:#f4f6f9;border:1px solid var(--line);border-radius:12px;padding:10px;min-height:80px;overflow:auto}
+.material-pair .mat-blocks img{display:block;max-width:100%;height:auto}
+.material-pair pre{margin:0;max-height:none;overflow:auto}
+@media(max-width:860px){.material-pair{grid-template-columns:1fr}}
+@media print{.material-pair{grid-template-columns:1fr 1fr}.material-pair .mat-blocks{overflow:visible}}

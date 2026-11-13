@@ -293,3 +293,13 @@ test('第 2 週 Bonus：燈條關卡存在、不計入 6 關與 180 分鐘、學
   assert.match(JSON.stringify(b), /neopixel|燈條/);
   assert.doesNotMatch(JSON.stringify(b), /neopixel\.create|showBarGraph\(|setPixelColor\(/);
 });
+
+test('教師入口：積木與 JavaScript 並列，積木由 MakeCode 官方繪圖服務產生', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const app = await readFile('src/app.js', 'utf8'), r = await readFile('src/services/blocks-renderer.js', 'utf8');
+  assert.match(app, /material-pair/); assert.match(app, /fillBlockSlots/);
+  assert.match(r, /https:\/\/makecode\.microbit\.org/); assert.match(r, /lang=zh-TW/);
+  assert.match(r, /e\.origin !== ORIGIN/); // 只接受 MakeCode 傳回的訊息
+  const { isMakeCode } = await import('../src/services/blocks-renderer.js');
+  assert.ok(isMakeCode('basic.showString("R")')); assert.ok(!isMakeCode('const card = { name: "信義鄉" }'));
+});
