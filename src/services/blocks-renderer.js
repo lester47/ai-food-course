@@ -42,7 +42,7 @@ export async function renderBlocks(code) {
   if (offline) throw new Error('offline'); // 這次開頁連不上就不再重試，避免每格都等 30 秒
   await boot();
   const id = 'b' + (++seq);
-  const options = {};
+  const options = { layout: 1 }; // 1＝事件積木由上往下排，和右邊程式碼的順序對得起來
   for (const [re, pkg] of EXTENSIONS) if (re.test(code)) options.package = pkg;
   const result = new Promise((resolve, reject) => {
     waiting.set(id, { resolve, reject });
