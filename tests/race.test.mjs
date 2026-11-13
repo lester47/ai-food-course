@@ -265,3 +265,9 @@ test('課程頁：存在、有入口連結、不含參考程式碼', async () =>
   assert.doesNotMatch(lesson, /onGesture\(|led\.plot|serial\.writeLine|plotBarGraph\(|localStorage/);
   assert.match(await readFile('src/race/app.js', 'utf8'), /href="\.\/lesson\.html"/);
 });
+
+test('第 3 週頁面有雙人競賽課程入口', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const app = await readFile('src/app.js', 'utf8');
+  assert.match(app, /w\.id==='w3'\?`<div class="panel game-callout race-callout">[^`]*href="\.\/race\/lesson\.html"/);
+});
