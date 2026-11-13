@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#185c40"><meta name="description" content="雙人競賽前的 90 分鐘課程：序列寫入一行文字、字串組合、長條圖。"><style id="boot-hide">html{background:#f7fbf4}body{opacity:0}</style><title>micro:bit 會說話｜AI 食農大使</title></head>
+<body class="race-page">
+<a class="skip" href="#race-main">跳至主要內容</a>
+<header><a class="brand" href="../#/">✳ <span>AI 食農大使<small>讓程式，連結土地</small></span></a><nav aria-label="主要導覽"><a href="../#/weeks">五週課程</a><a href="../#/practice/led">互動實驗室</a><a class="nav-race" href="./">🏁 雙人競賽</a><a href="../#/gallery">作品展示</a><a href="../#/help">操作說明</a><a class="nav-submit" href="../#/submit">📮 繳交作業</a></nav></header>
+<main id="race-main" class="race-main lesson" tabindex="-1">
+
+<section class="race-hero">
+  <p class="race-eyebrow">第 3 週延伸｜雙人競賽前的課</p>
+  <h1>📡 micro:bit 會說話</h1>
+  <p>學會 3 個新積木，就能做出雙人競賽用的搖晃計步器！</p>
+</section>
+
+<div class="lesson-cards">
+  <a class="lesson-card" href="#b1"><b>① 序列 寫入一行文字</b><span>把一行字送給電腦</span></a>
+  <a class="lesson-card" href="#b2"><b>② 字串組合</b><span>把標籤和數字黏在一起</span></a>
+  <a class="lesson-card" href="#b3"><b>③ plot bar graph</b><span>LED 變成進度條</span></a>
+</div>
+
+<section class="race-panel lesson-sec">
+  <h2>🗺️ 今天的任務地圖（90 分鐘）</h2>
+  <ol class="lesson-map">
+    <li><b>暖身</b>：人體序列埠（10 分）</li>
+    <li><b>積木一</b>：序列 寫入一行文字（20 分）</li>
+    <li><b>積木二</b>：字串組合＋除錯偵探（20 分）</li>
+    <li><b>積木三</b>：長條圖，先預測再觀察（18 分）</li>
+    <li><b>整合遊戲</b>：搖搖樂對決（14 分）</li>
+    <li><b>出口票</b>（8 分）</li>
+  </ol>
+  <p class="race-small">沒有 micro:bit 也沒關係：MakeCode 的模擬器有 <b>SHAKE</b> 按鈕可以搖，也有「顯示資料 模擬器」可以看訊息。</p>
+</section>
+
+<section class="race-panel lesson-sec">
+  <h2>🧍 暖身：人體序列埠</h2>
+  <p>每排第一位當「micro:bit」，最後一位當「電腦」，中間是「USB 線」。老師拍一下 micro:bit 的肩膀＝搖一下。micro:bit 在紙條上寫<b>一行</b>字，往後傳到電腦。</p>
+  <ul>
+    <li>第 1 輪：只寫數字，例如 <code>3</code>。</li>
+    <li>第 2 輪：兩排的紙條混在一起交給同一台電腦。電腦分得出是哪一隊、是什麼數字嗎？</li>
+    <li>第 3 輪：改寫 <code>STEP:3</code>。這次呢？</li>
+  </ul>
+  <p class="lesson-think">🤔 想一想：為什麼一張紙條只能寫一行？</p>
+</section>
+
+<section class="race-panel lesson-sec" id="b1">
+  <h2>① 序列 寫入一行文字</h2>
+  <p>這個積木讓 micro:bit 透過 USB 線，把一行字「說」給電腦聽。字<b>不會</b>出現在 LED 上，要在「顯示資料」裡才看得到。</p>
+  <p class="lesson-where">📍 在哪裡：<b>進階 → 序列 → 序列 寫入一行文字</b></p>
+  <p class="lesson-where">👀 怎麼看：用到序列積木後，模擬器下面會出現「<b>顯示資料 模擬器</b>」按鈕，按下去。</p>
+  <h3>練習 1：micro:bit 打招呼</h3>
+  <ol>
+    <li>「當啟動時」放入「序列 寫入一行文字」，文字改成 <code>HELLO</code>。</li>
+    <li>打開顯示資料，有看到 HELLO 嗎？LED 有亮東西嗎？</li>
+    <li>改成你們的小組名字（英文或拼音，例如 <code>TEAM7</code>），重新啟動模擬器再看一次。</li>
+  </ol>
+  <h3>練習 2：按鈕通報員</h3>
+  <ol>
+    <li>按 A：寫入一行文字 <code>A</code>；按 B：寫入一行文字 <code>B</code>。</li>
+    <li>按 A 三下、B 兩下。顯示資料有幾行？</li>
+  </ol>
+  <h3>🎮 小遊戲：暗號接力</h3>
+  <p>兩人一組。甲背對螢幕，用練習 2 偷偷按一串暗號（例如 A A B A）；乙只看顯示資料，把暗號唸出來。唸對就交換，暗號一次比一次長！</p>
+</section>
+
+<section class="race-panel lesson-sec" id="b2">
+  <h2>② 字串組合</h2>
+  <p>「字串組合」把兩段文字黏成一段：前面放固定的標籤 <code>STEP:</code>，後面放會變的「步數」，就會送出 <code>STEP:1</code>、<code>STEP:2</code>……</p>
+  <p class="lesson-where">📍 在哪裡：<b>進階 → 文字 → 字串組合</b>（按 ⊕ 可以多接一段）</p>
+  <p class="lesson-think">📦 就像寄包裹：箱子貼「綠豆 3 包」。「綠豆」是固定標籤，「3」每次不一樣，黏在一起收件人才看得懂。</p>
+  <h3>練習 3：會報數的計步器</h3>
+  <ol>
+    <li>建立變數「步數」。</li>
+    <li>當姿勢 晃動 發生：步數 改變 1。</li>
+    <li>接著：序列 寫入一行文字，裡面放「字串組合」，第一格 <code>STEP:</code>，第二格從「變數」拖入圓角的「步數」。</li>
+    <li>按模擬器的 SHAKE 搖 5 下，顯示資料應該出現 STEP:1 到 STEP:5。</li>
+  </ol>
+  <h3>🕵️ 除錯偵探：一個字都不能錯</h3>
+  <p>競賽網頁只認得 <code>STEP:數字</code>。下面每個案件，顯示資料看到的都不太一樣。哪裡錯了？網頁收不收？寫在學習單上，再自己改程式驗證。</p>
+  <div class="lesson-table"><table>
+    <thead><tr><th>案件</th><th>顯示資料看到</th><th>哪裡錯？</th><th>網頁收不收？</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><code>STEP:步數</code></td><td></td><td></td></tr>
+      <tr><td>2</td><td><code>STEP5</code></td><td></td><td></td></tr>
+      <tr><td>3</td><td><code>5STEP:</code></td><td></td><td></td></tr>
+      <tr><td>4</td><td><code>5</code></td><td></td><td></td></tr>
+      <tr><td>5</td><td><code>step:5</code></td><td></td><td></td></tr>
+      <tr><td>6</td><td><code>STEP:5</code></td><td></td><td></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="race-panel lesson-sec" id="b3">
+  <h2>③ plot bar graph 長條圖</h2>
+  <p>把 25 顆 LED 當成進度條：數字越接近「up to」就亮越多，從最下面一排往上長，到了就全亮。</p>
+  <p class="lesson-where">📍 在哪裡：<b>LED</b>（找不到就按「更多」）<br>🔤 讀法：<b>plot bar graph of</b>＝畫長條圖，數值是；<b>up to</b>＝滿格是</p>
+  <h3>練習 4：先預測再觀察</h3>
+  <p>拼一個測試程式：<b>按 A</b>：步數 改變 5，再 plot bar graph of 步數 up to 20。<b>按 B</b>：步數 設為 0，再 plot bar graph of 步數 up to 20。</p>
+  <p>每按一次 A 之前，先在下面點格子畫出你的預測，再按模擬器對照。猜錯沒關係，找出為什麼不一樣才是重點！</p>
+  <div class="lesson-predict" id="predict"></div>
+  <p class="lesson-think">🔁 變化挑戰：把 up to 20 改成 up to 10，再按兩次 A（步數 10）。為什麼這次全亮？比賽是先到 20 步獲勝，up to 要填多少？</p>
+</section>
+
+<section class="race-panel lesson-sec">
+  <h2>🏁 整合遊戲：搖搖樂對決</h2>
+  <p>把三個積木合起來，就是雙人競賽的程式！在練習 3 的程式補上：</p>
+  <ol>
+    <li>搖晃事件最後：plot bar graph of 步數 up to 20。</li>
+    <li>當按鈕 A 被按下：步數 設為 0；寫入一行文字 <code>RESET</code>；顯示文字 <code>R</code>（綠隊用 <code>G</code>）。</li>
+    <li>當啟動時：顯示文字 <code>R</code> 或 <code>G</code>，一看就知道是哪一隊的板子。</li>
+  </ol>
+  <p>✅ 自我檢查：搖 3 下 → 顯示資料有 STEP:1、STEP:2、STEP:3，LED 最下面慢慢變亮；按 A → 出現 RESET。</p>
+  <div class="lesson-table"><table>
+    <thead><tr><th>你們的設備</th><th>怎麼比</th></tr></thead>
+    <tbody>
+      <tr><td>有 micro:bit，每人一台電腦</td><td>下載到板子，<b>關掉顯示資料視窗</b>，到雙人競賽頁：紅隊建立房間、綠隊輸入房號、各自連接 micro:bit。</td></tr>
+      <tr><td>沒有 micro:bit，每人一台電腦</td><td>雙人競賽頁兩人都選「模擬按鈕」比賽；比完交換檢查對方的程式。</td></tr>
+      <tr><td>兩人共用一台電腦</td><td>在 MakeCode 模擬器比：一人點 SHAKE，一人當裁判盯著顯示資料，看到 STEP:20、LED 全亮就算完成，計時比快。</td></tr>
+    </tbody>
+  </table></div>
+  <p><a class="race-btn red" href="./">🏁 前往雙人競賽</a></p>
+</section>
+
+<section class="race-panel lesson-sec">
+  <h2>🎟️ 出口票（3 題全對才能出關）</h2>
+  <ol>
+    <li>「序列 寫入一行文字」送出的字，要到哪裡才看得到？</li>
+    <li>步數是 7，字串組合 <code>STEP:</code> 步數，會送出什麼？</li>
+    <li>plot bar graph of 步數 up to 20，步數是 10 時，LED 大約亮幾成？</li>
+  </ol>
+</section>
+
+<section class="race-panel lesson-sec">
+  <h2>🏠 回家作業：三層挑戰（任選一層）</h2>
+  <p>繳交 MakeCode 程式截圖＋顯示資料截圖（下次上課展示或貼到 Padlet）。沒有 micro:bit 用模擬器完成就可以。</p>
+  <div class="lesson-tiers">
+    <article><h3>🌱 基礎：跳跳計數器</h3><p>按 A 當作跳一下，送出 <code>JUMP:次數</code>，LED 用長條圖顯示，滿格 10 下。</p><p class="race-small">完成：顯示資料出現 JUMP:1…JUMP:10，第 10 下 LED 全亮。</p></article>
+    <article><h3>🌿 進階：食農採收單</h3><p>搖一下收一籃茶葉，送出 <code>TEA:籃數</code>；按 B 送出 <code>TOTAL:籃數</code>。</p><p class="race-small">提示：字串組合可以按 ⊕ 接三段。完成：兩種標籤都正確，中間都有冒號。</p></article>
+    <article><h3>🌳 挑戰：到終點會歡呼</h3><p>在競賽程式加上「如果…那麼」：步數到 20 時，送出一行 <code>GOAL</code> 並顯示笑臉。</p><p class="race-small">再寫一句：競賽網頁看到 GOAL 會怎麼樣？</p></article>
+  </div>
+</section>
+
+</main>
+<footer><b>✳ AI 食農大使</b><span>雙人競賽實驗室 · micro:bit 會說話</span><small>建議使用電腦版 Chrome／Edge</small></footer>
+<script type="module">
+// 長條圖預測格：點格子畫出預測（只在這個畫面，不會儲存）
+const box = document.getElementById('predict');
+for (const n of [0, 5, 10, 15, 20]) {
+  const card = document.createElement('div');
+  card.className = 'lesson-led-card';
+  card.innerHTML = `<b>步數 ${n}</b><div class="lesson-led" role="group" aria-label="步數 ${n} 的預測"></div><button type="button" class="race-btn ghost tiny">清除</button>`;
+  const grid = card.querySelector('.lesson-led');
+  for (let i = 0; i < 25; i++) {
+    const c = document.createElement('button');
+    c.type = 'button'; c.setAttribute('aria-pressed', 'false'); c.setAttribute('aria-label', `第 ${Math.floor(i / 5) + 1} 排第 ${i % 5 + 1} 顆`);
+    c.addEventListener('click', () => c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'));
+    grid.append(c);
+  }
+  card.querySelector('.race-btn').addEventListener('click', () => grid.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', 'false')));
+  box.append(card);
+}
+</script>
+<script>(async()=>{let v="";try{v=(await (await fetch("../version.json",{cache:"no-store"})).json()).v}catch(e){}v=v||Date.now().toString(36);const l=document.createElement("link");l.rel="stylesheet";l.href="../src/styles.css?v="+v;const show=()=>{const b=document.getElementById("boot-hide");if(b)b.remove()};l.onload=show;l.onerror=show;setTimeout(show,4000);document.head.append(l);if(!document.querySelector("link[data-fonts]")){const f=document.createElement("link");f.rel="stylesheet";f.dataset.fonts="1";f.href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap";document.head.append(f)}})();</script>
+</body></html>

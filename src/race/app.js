@@ -79,6 +79,7 @@ function lobbyHTML() {
     <p class="race-eyebrow">第 3 週延伸挑戰</p>
     <h1>🏁 雙人競賽實驗室</h1>
     <p>兩個人、兩台電腦、各一塊 micro:bit。搖一搖，看誰先走到 <b>${TARGET} 步</b>！</p>
+    <a class="race-btn blue race-lesson-link" href="./lesson.html">📡 第一次玩？先上課：micro:bit 會說話</a>
   </section>
   <ul class="race-checks" aria-label="使用環境檢查">
     <li data-check="serial"></li>
@@ -123,6 +124,7 @@ function helpHTML() {
       <li><b>當 按鈕 A 被按下時</b>：<b>步數 設為 0</b>，再寫入一行 <code>RESET</code>。</li>
       <li>下載到 micro:bit 後，<b>關掉 MakeCode 的「顯示資料」視窗</b>，不然這一頁會連不上板子。</li>
     </ol>
+    <p><a href="./lesson.html">📡 看完整課程：序列、字串組合、長條圖的練習與遊戲 →</a></p>
     <p class="race-small">第一週的 <code>STEP,12</code>（逗號）格式也可以使用。比賽只計算「比賽開始後新增的步數」，所以不用先把板子歸零。</p>
   </details>`;
 }
