@@ -285,13 +285,13 @@ test('第 2 週含一板雙隊、第 3 週是雙人競賽，兩週皆為完整 P
   assert.doesNotMatch(JSON.stringify([...w2, ...w3]), /onGesture\(|serial\.writeLine|plotBarGraph\(/); // 學生頁不放程式碼
 });
 
-test('第 2 週 Bonus：燈條關卡存在、不計入 6 關與 180 分鐘、學生頁不含程式碼', async () => {
+test('第 2 週燈條為主線：前兩關是燈條、連到燈條課頁，沒有 Bonus，學生頁不含程式碼', async () => {
   const { tasks } = await import('../src/data/tasks.js');
-  const b = tasks.find(t => t.id === 'w2-bonus');
-  assert.ok(b && b.bonus && b.weekId === 'w2' && b.unlock && b.tiers.challenge.length);
-  assert.equal(tasks.filter(t => t.weekId === 'w2' && !t.bonus).length, 6);
-  assert.match(JSON.stringify(b), /neopixel|燈條/);
-  assert.doesNotMatch(JSON.stringify(b), /neopixel\.create|showBarGraph\(|setPixelColor\(/);
+  const w2 = tasks.filter(t => t.weekId === 'w2');
+  assert.equal(w2.length, 6); assert.ok(w2.every(t => !t.bonus));
+  assert.ok(w2.slice(0, 2).every(t => /燈條/.test(t.title) && t.practiceUrl.startsWith('./ws2812/')));
+  assert.match(JSON.stringify(w2), /neopixel/); assert.match(JSON.stringify(w2), /模擬器/);
+  assert.doesNotMatch(JSON.stringify(w2), /neopixel\.create|showBarGraph\(|setPixelColor\(|STEP:/);
 });
 
 test('教師入口：積木與 JavaScript 並列，積木由 MakeCode 官方繪圖服務產生', async () => {
