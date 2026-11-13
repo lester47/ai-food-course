@@ -42,7 +42,8 @@ jobs:
           URL=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -1)
           echo "競賽伺服器網址：$URL" >> "$GITHUB_STEP_SUMMARY"
           echo "請把這個網址設為存放庫變數 RACE_SERVER_URL，再重新執行「部署到 GitHub Pages」。" >> "$GITHUB_STEP_SUMMARY"
-          curl -fsS "$URL/health"
+          # 新網址可能要等幾十秒才生效：最多重試 12 次
+          for i in $(seq 1 12); do curl -fsS "$URL/health" && exit 0; sleep 10; done; exit 1
       - name: 尚未設定 Cloudflare 憑證
         if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''
         run: echo "::notice::尚未設定 CLOUDFLARE_API_TOKEN／CLOUDFLARE_ACCOUNT_ID，已完成測試與打包檢查，但沒有部署。"
