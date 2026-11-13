@@ -21,8 +21,8 @@
    - `CLOUDFLARE_API_TOKEN`：第 3 步的權杖
    - `CLOUDFLARE_ACCOUNT_ID`：第 4 步的帳號 ID
 6. 到「Actions」→ 左側「部署雙人競賽伺服器（Cloudflare Worker）」→「Run workflow」。完成後點進這次執行，摘要會顯示伺服器網址，例如 `https://ai-food-race.lester47.workers.dev`。
-7. 回到「Settings」→「Secrets and variables」→「Actions」→ 切到「Variables」分頁 →「New repository variable」：名稱 `RACE_SERVER_URL`，值填第 6 步的網址（不要加最後的 `/`）。
-8. 到「Actions」→「部署到 GitHub Pages」→「Run workflow」。約 2 分鐘後打開雙人競賽頁，大廳應顯示「✅ 競賽伺服器連線正常」。
+7. 網站已預先設定伺服器網址 `https://ai-food-race.lester47.workers.dev`（`src/config/race.js`）。只有在網址不同時，才需要到「Variables」分頁新增 `RACE_SERVER_URL`，再執行「部署到 GitHub Pages」。
+8. 打開雙人競賽頁，大廳應顯示「✅ 競賽伺服器連線正常」。
 
 之後只要修改 `race-server/` 或 `src/race/room-core.js` 並推送到 `main`，伺服器會自動重新部署。
 
