@@ -39,7 +39,7 @@ pre{background:#000;color:#7dffb0;border-radius:10px;padding:10px 12px;height:16
 <body>
 <div class="wrap">
   <h1>巡田步數接收頁</h1>
-  <p class="sub"><a href="./" style="color:var(--accent)">← 回 WS2812 燈條課</a>　micro:bit 每走一步，就會傳來 <code>steps:數字</code>，這裡的跑道跟著往前。</p>
+  <p class="sub"><a href="./" style="color:var(--accent)">← 回 WS2812 燈條課</a>　micro:bit 每走一步，就會傳來一行 <code>STEP,步數</code>，這裡的跑道跟著往前；收到 <code>RESET</code> 就歸零。</p>
 
   <div class="err" id="unsupported" hidden>這個瀏覽器不能讀 USB。請用電腦版 <b>Chrome</b> 或 <b>Edge</b> 打開這個檔案。下面的「示範模式」還是可以玩。</div>
 
@@ -50,7 +50,7 @@ pre{background:#000;color:#7dffb0;border-radius:10px;padding:10px 12px;height:16
   </div>
 
   <div class="card">
-    <div class="nums"><span class="big" id="steps">0</span><span class="goal">/ <span id="goal">20</span> 步</span></div>
+    <div class="nums"><span class="big" id="steps">0</span><span class="goal">/ <span id="goal">10</span> 步</span></div>
     <div class="track" id="track"></div>
     <div class="msg" id="msg">等待出發</div>
   </div>
@@ -59,8 +59,7 @@ pre{background:#000;color:#7dffb0;border-radius:10px;padding:10px 12px;height:16
     <summary>示範模式（沒有 micro:bit 也能試）</summary>
     <div class="bar" style="margin-top:10px">
       <button type="button" class="ghost" id="demoStep">走一步</button>
-      <button type="button" class="ghost" id="demoReset">歸零</button>
-      <button type="button" class="ghost" id="demoGoal">目標 +10</button>
+      <button type="button" class="ghost" id="demoReset">A+B 歸零</button>
     </div>
   </details>
 
@@ -70,14 +69,14 @@ pre{background:#000;color:#7dffb0;border-radius:10px;padding:10px 12px;height:16
   </details>
 
   <ol class="help">
-    <li>micro:bit 程式裡要有「序列寫入數值 "steps" = steps」（目標用 "goal"）。</li>
+    <li>micro:bit 程式裡要有「序列 寫入一行文字」，內容是字串組合 <code>STEP,</code> 和 步數；歸零時送 <code>RESET</code>。</li>
     <li>先關掉 MakeCode 分頁，避免連接埠被占用。</li>
     <li>按「連接 micro:bit」，選擇名稱有 <b>mbed</b> 或 <b>micro:bit</b> 的裝置。</li>
   </ol>
 </div>
 
 <script>
-let steps=0, goal=20, port=null, reader=null, keep=false;
+let steps=0, goal=10, port=null, reader=null, keep=false;
 const $=id=>document.getElementById(id);
 const track=$('track'); track.innerHTML='<div></div>'.repeat(10);
 const cells=[...track.children];
@@ -96,10 +95,9 @@ function draw(){
 function log(line){const l=$('log'); l.textContent+=line+'\n'; if(l.textContent.length>8000) l.textContent=l.textContent.slice(-6000); l.scrollTop=1e9;}
 function handle(line){
   line=line.trim(); if(!line) return; log(line);
-  const m=line.match(/^([A-Za-z_]\w*)\s*:\s*(-?\d+(?:\.\d+)?)$/); if(!m) return;
-  const v=Math.round(Number(m[2]));
-  if(m[1]==='steps') steps=Math.max(0,v);
-  else if(m[1]==='goal') goal=Math.max(1,v);
+  if(line==='RESET'){ steps=0; draw(); return; }
+  const m=/^STEP,(0|[1-9]\d{0,5})$/.exec(line); if(!m) return;
+  steps=Number(m[1]);
   draw();
 }
 
@@ -127,9 +125,8 @@ async function disconnect(){ keep=false; try{await reader.cancel()}catch(_){} }
 
 if(!('serial' in navigator)){ $('unsupported').hidden=false; $('connect').disabled=true; }
 $('connect').onclick=connect; $('disconnect').onclick=disconnect;
-$('demoStep').onclick=()=>handle('steps:'+(steps+1));
-$('demoReset').onclick=()=>handle('steps:0');
-$('demoGoal').onclick=()=>handle('goal:'+(goal+10));
+$('demoStep').onclick=()=>handle('STEP,'+Math.min(10,steps+1));
+$('demoReset').onclick=()=>handle('RESET');
 draw();
 </script>
 </body>
