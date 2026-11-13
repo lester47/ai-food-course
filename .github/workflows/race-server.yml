@@ -1,0 +1,48 @@
+name: 部署雙人競賽伺服器（Cloudflare Worker）
+# 需要在 GitHub 存放庫設定兩個 Secrets（Settings → Secrets and variables → Actions）：
+#   CLOUDFLARE_API_TOKEN、CLOUDFLARE_ACCOUNT_ID
+# 沒有設定時，這個流程只做測試與打包檢查，不會部署，也不會失敗。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'race-server/**'
+      - 'src/race/room-core.js'
+      - '.github/workflows/race-server.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: race-server
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: race-server
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm test
+      - name: 打包檢查（不部署）
+        run: npx wrangler deploy --dry-run --outdir .wrangler/dry
+      - name: 部署到 Cloudflare
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        run: npx wrangler deploy | tee deploy.log
+      - name: 顯示伺服器網址
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        run: |
+          URL=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -1)
+          echo "競賽伺服器網址：$URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "請把這個網址設為存放庫變數 RACE_SERVER_URL，再重新執行「部署到 GitHub Pages」。" >> "$GITHUB_STEP_SUMMARY"
+          curl -fsS "$URL/health"
+      - name: 尚未設定 Cloudflare 憑證
+        if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''
+        run: echo "::notice::尚未設定 CLOUDFLARE_API_TOKEN／CLOUDFLARE_ACCOUNT_ID，已完成測試與打包檢查，但沒有部署。"

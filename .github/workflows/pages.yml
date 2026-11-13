@@ -23,6 +23,8 @@ jobs:
           node-version: 22
       - run: npm test
       - run: npm run build
+        env:
+          RACE_SERVER_URL: ${{ vars.RACE_SERVER_URL }}
       - uses: actions/configure-pages@v5
         with:
           enablement: true
