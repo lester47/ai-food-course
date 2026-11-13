@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#1f7a4d"><meta name="description" content="延伸選修：micro:bit + robot:bit 控制 10 顆 WS2812 彩色燈條，3 節課從按鈕到計步進度條與序列傳網頁。">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style><title>WS2812 彩色燈條課｜AI 食農大使</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: sticky lesson tabs over one reading column; each step is a numbered card; LED strip simulators sit beside the examples */
+:root{
+  --bg:#f4f7f3; --surface:#ffffff; --surface2:#eef3ee; --fg:#1b241f; --muted:#5a6a61; --line:#d6dfd8;
+  --accent:#1f7a4d; --accent-soft:#e1f0e6; --warn:#b4511a; --warn-soft:#fbede2; --ok:#1f8a4c; --no:#c62f2f;
+  --led-off:#2a302c; --sim-bg:#161b18; --sim-fg:#cfe0d5;
+  --c-bas:#1e90ff; --c-inp:#d400d4; --c-np:#2699bf; --c-var:#dc143c; --c-lp:#00aa00; --c-logic:#00a4a6; --c-mth:#9400d3; --c-ser:#002050; --c-mus:#e63022; --c-pins:#b22222; --c-led:#5c2d91;
+  --font-body:"Noto Sans TC",system-ui,"PingFang TC","Microsoft JhengHei",sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111613; --surface:#1a211d; --surface2:#202923; --fg:#e3ebe6; --muted:#98a99f; --line:#2d3934;
+  --accent:#5cc98f; --accent-soft:#1c3327; --warn:#f0a070; --warn-soft:#3a2619; --ok:#5cc98f; --no:#ff7b7b;
+  --led-off:#2a302c; --sim-bg:#0b0f0c; --sim-fg:#cfe0d5; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111613; --surface:#1a211d; --surface2:#202923; --fg:#e3ebe6; --muted:#98a99f; --line:#2d3934;
+  --accent:#5cc98f; --accent-soft:#1c3327; --warn:#f0a070; --warn-soft:#3a2619; --ok:#5cc98f; --no:#ff7b7b;
+  --led-off:#2a302c; --sim-bg:#0b0f0c; --sim-fg:#cfe0d5; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16.5px;line-height:1.8}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.col{max-width:880px;margin:0 auto}
+header.top{background:var(--surface);border-bottom:1px solid var(--line)}
+header.top .col{padding-block:28px 18px}
+.eyebrow{font-size:13px;letter-spacing:.12em;font-weight:700;color:var(--accent)}
+h1{font-size:clamp(26px,5.4vw,40px);font-weight:900;line-height:1.25;margin:6px 0 4px;text-wrap:balance}
+.sub{color:var(--muted);margin:0}
+.hero-strip{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.hero-strip i{width:18px;height:18px;border-radius:50%;background:var(--led-off);animation:chase 2s infinite steps(1)}
+@keyframes chase{0%{background:#ff4040;box-shadow:0 0 10px #ff4040}10%{background:var(--led-off);box-shadow:none}}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.tabs .col{display:flex;gap:4px;align-items:center;overflow-x:auto;padding-block:6px}
+nav.tabs a{flex:none;text-decoration:none;color:var(--muted);font-weight:700;padding:8px 14px;border-radius:8px;font-size:15px;white-space:nowrap}
+nav.tabs a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+nav.tabs a:hover{color:var(--fg)}
+.tbtn{margin-left:auto;flex:none;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:99px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+body.teacher .tbtn{background:var(--warn);color:#fff;border-color:var(--warn)}
+main .col{padding-block:24px 80px}
+section.lesson>h2{font-size:clamp(24px,4.4vw,32px);font-weight:900;line-height:1.3;margin:8px 0 4px;text-wrap:balance}
+.lede{color:var(--muted);max-width:68ch;margin:0 0 8px}
+.goals{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;padding:0;list-style:none}
+.goals li{background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:14px;padding:3px 12px;border-radius:99px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px 22px 20px;margin:20px 0}
+.step>h3{display:flex;gap:10px;align-items:baseline;font-size:20px;font-weight:900;margin:16px 0 6px;text-wrap:balance}
+.step>h3 .n{font:600 13px var(--font-mono);color:var(--accent);background:var(--accent-soft);padding:1px 8px;border-radius:6px;flex:none}
+.step>h3 .kind{font-size:13px;font-weight:700;color:var(--warn);margin-left:auto;flex:none}
+.step p,.step li{max-width:68ch}
+.step h4{font-size:16px;margin:18px 0 4px}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--surface2);padding:1px 6px;border-radius:4px}
+.note{border-left:4px solid var(--warn);background:var(--warn-soft);padding:10px 16px;border-radius:0 10px 10px 0;margin:14px 0}
+.note.ok{border-color:var(--accent);background:var(--accent-soft)}
+.note b:first-child{display:block}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;align-items:start}
+.two>*{min-width:0}
+@media (min-width:760px){.two{grid-template-columns:minmax(0,3fr) minmax(0,2fr)}.two>div:last-child>.sim:first-child{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px)}}
+figure{margin:14px 0}
+figure svg{width:100%;height:auto;display:block}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:6px}
+svg .s-line{stroke:var(--fg);fill:none}
+svg .s-mut{fill:var(--muted)}
+svg .s-fg{fill:var(--fg)}
+svg .s-box{fill:var(--surface2);stroke:var(--line)}
+svg .s-acc{fill:var(--accent)}
+svg .s-warn{fill:var(--warn)}
+svg .s-off{fill:var(--led-off)}
+svg text{font-family:var(--font-body)}
+.tbl{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:480px;font-size:15px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface2)}
+/* blocks */
+.blocks{display:flex;flex-direction:column;gap:2px;margin:12px 0;overflow-x:auto;padding-bottom:4px;font-size:14.5px;line-height:1.4}
+.b{--i:0;margin-left:calc(var(--i) * 20px);width:max-content;color:#fff;font-weight:500;padding:7px 12px;border-radius:5px;display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap}
+.b.k-h{border-radius:16px 16px 5px 5px;padding-top:11px}
+.b.k-e{padding:0;height:12px;width:110px;border-radius:0 0 5px 5px}
+.b.k-c{border-radius:5px 5px 5px 0}
+.bas{background:var(--c-bas)}.inp{background:var(--c-inp)}.np{background:var(--c-np)}.var{background:var(--c-var)}.lp{background:var(--c-lp)}.logic{background:var(--c-logic)}.mth{background:var(--c-mth)}.ser{background:var(--c-ser)}.mus{background:var(--c-mus)}.pins{background:var(--c-pins)}.led{background:var(--c-led)}
+.rep{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.slot{background:#fff;color:#222;border-radius:11px;padding:0 9px;font-family:var(--font-mono);font-size:13px;line-height:22px}
+select.blank{font:600 13px var(--font-mono);background:transparent;color:#fff;border:2px dashed #fff;border-radius:11px;padding:1px 6px;min-width:64px;cursor:pointer}
+select.blank option{color:#111;background:#fff}
+select.blank.ok{background:#fff;color:var(--ok);border:2px solid #7dffb0}
+select.blank.no{background:#ffd6d6;color:#a00;border-style:solid;animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.score{font-size:14px;color:var(--muted)}
+.score b{color:var(--accent)}
+/* bug hunt */
+.bug{border:1px dashed var(--line);border-radius:12px;padding:10px 16px;margin:14px 0;background:var(--surface2)}
+.bug .sym{font-weight:700}
+.bug .sym::before{content:"症狀：";color:var(--warn)}
+.bug .b{cursor:pointer;outline-offset:2px}
+.bug .b:hover{filter:brightness(1.12)}
+.bug .b.miss{animation:shake .3s;opacity:.55}
+.bug .b.found{outline:3px solid #ffb300;box-shadow:0 0 0 6px rgba(255,179,0,.25)}
+.bug .fb{font-size:14.5px;color:var(--muted);margin:6px 0 0;min-height:1.6em}
+.bug .explain{display:none;margin:6px 0 0;padding:8px 12px;border-radius:8px;background:var(--surface);border-left:4px solid #ffb300}
+.bug.solved .explain{display:block}
+.choices{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.choices button{font:inherit;font-size:15px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:6px 12px;cursor:pointer}
+.choices button.ok{border-color:var(--ok);color:var(--ok);font-weight:700}
+.choices button.no{border-color:var(--no);color:var(--no);text-decoration:line-through}
+/* teacher */
+.t-only{display:none}
+body.teacher .t-only{display:block}
+body.teacher .bug [data-bug]{outline:3px solid #ffb300}
+body.teacher .bug .explain{display:block}
+.t-only.tip{background:var(--warn-soft);border-radius:10px;padding:10px 14px;margin:12px 0;font-size:15px}
+.t-only.tip::before{content:"教師提示　";font-weight:900;color:var(--warn)}
+/* code */
+details.code{margin:10px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface2)}
+details.code summary{cursor:pointer;padding:8px 14px;font-weight:700;font-size:14.5px;color:var(--muted)}
+details.code pre{margin:0;padding:12px 14px;overflow-x:auto;font:13px/1.6 var(--font-mono);border-top:1px solid var(--line)}
+.copy{font:inherit;font-size:13px;margin:0 14px 12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:6px;padding:4px 12px;cursor:pointer}
+/* simulator */
+.sim{background:var(--sim-bg);color:var(--sim-fg);border-radius:14px;padding:14px 16px;margin:12px 0}
+.sim .ttl{font:600 12px var(--font-mono);letter-spacing:.08em;opacity:.7;display:flex;justify-content:space-between;gap:8px}
+.leds{display:flex;gap:6px;margin:14px 0 4px;justify-content:space-between}
+.leds div{flex:1;max-width:32px;aspect-ratio:1;border-radius:50%;background:var(--led-off);border:2px solid #000;position:relative;transition:background .05s}
+.leds div span{position:absolute;top:calc(100% + 3px);left:50%;transform:translateX(-50%);font:10px var(--font-mono);opacity:.55}
+.sim .ctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.sim button{font:700 14px var(--font-body);border:0;border-radius:99px;padding:6px 14px;cursor:pointer;background:#2f3a33;color:#fff}
+.sim button.ab{background:#3f5d4c}
+.sim button.rst{background:transparent;border:1px solid #3c4a41;color:var(--sim-fg);font-weight:500}
+.sim button:active{transform:scale(.95)}
+.sim .ro{font:12.5px var(--font-mono);margin-top:10px;opacity:.85;display:flex;flex-wrap:wrap;gap:4px 16px}
+.sim .log{font:12px var(--font-mono);background:#000;color:#7dffb0;border-radius:6px;padding:6px 8px;margin-top:8px;height:64px;overflow:auto;white-space:pre}
+.sim .log:empty::before{content:"序列輸出會出現在這裡";color:#556}
+/* homework */
+.hw{border:2px solid var(--accent);border-radius:14px;padding:6px 22px 18px;margin:20px 0;background:var(--surface)}
+.hw>h3{color:var(--accent);font-size:20px;font-weight:900;margin:14px 0 4px}
+details.hint{margin:8px 0}
+details.hint summary{cursor:pointer;font-weight:700;color:var(--accent)}
+.map{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0}
+.map>div{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--surface2);min-width:0}
+.map h4{margin:0 0 4px;font-size:15px}
+.map ul{margin:0;padding-left:18px;font-size:14.5px}
+/* receiver demo */
+.track{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin:10px 0}
+.track div{height:30px;border-radius:6px;background:var(--surface2);border:1px solid var(--line);transition:background .2s}
+.big{font:900 40px var(--font-mono);font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+footer{color:var(--muted);font-size:13.5px;border-top:1px solid var(--line);margin-top:40px;padding-top:14px}
+</style>
+
+<header class="top pad"><div class="col">
+  <div class="eyebrow"><a href="../#/weeks/w1" style="color:inherit">← 回 AI 食農大使・第 1 週</a>　｜　延伸選修</div>
+  <h1>WS2812 彩色燈條課：從按鈕到計步進度條</h1>
+  <p class="sub">micro:bit ＋ robot:bit 擴展板 ＋ 10 顆 WS2812 燈條（接 P0）・3 節課，每節 40 分鐘</p>
+  <div class="hero-strip" aria-hidden="true"><i style="animation-delay:0s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.4s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.8s"></i><i style="animation-delay:1s"></i><i style="animation-delay:1.2s"></i><i style="animation-delay:1.4s"></i><i style="animation-delay:1.6s"></i><i style="animation-delay:1.8s"></i></div>
+</div></header>
+
+<nav class="tabs pad" aria-label="課程分頁"><div class="col">
+  <a href="#lesson1">第 1 節　點亮燈條</a>
+  <a href="#lesson2">第 2 節　燈向前跑</a>
+  <a href="#lesson3">第 3 節　計步進度條</a>
+  <a href="#web">網頁接收步數</a>
+  <button class="tbtn" id="tbtn" type="button" aria-pressed="false">教師模式：關</button>
+</div></nav>
+
+<main class="pad"><div class="col">
+
+<!-- ================= LESSON 1 ================= -->
+<section class="lesson" id="v-lesson1">
+  <h2>第 1 節　點亮我的燈條</h2>
+  <p class="lede">上次我們用 A、B、A+B 控制 micro:bit 的點陣。今天按鈕不變，讓它們改成控制 10 顆彩色燈。</p>
+  <ul class="goals"><li>認識 WS2812</li><li>接到 P0</li><li>加入 neopixel 擴展</li><li>A / B / A+B 換顏色</li></ul>
+  <div class="t-only tip">時間分配：回顧 0–5、認識燈條 5–10、接線 10–15、範例 1-1 15–20、範例 1-2 20–28、克漏字 28–33、找錯 33–38、功課 38–40。</div>
+
+  <div class="step">
+    <h3><span class="n">1</span>回顧：上次學的按鈕</h3>
+    <p>還記得這三個積木嗎？今天這三個積木會一直用到，只是裡面放的東西從「顯示圖示」換成「燈條顏色」。</p>
+    <div data-prog="l1r"></div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">2</span>WS2812 是什麼？</h3>
+    <figure>
+      <svg viewBox="0 0 640 190" role="img" aria-label="micro:bit 從 P0 把顏色資料傳給第 0 顆燈，第 0 顆留下自己的顏色後把剩下的傳給第 1 顆，依此類推">
+        <rect class="s-box" x="10" y="60" width="90" height="70" rx="10"/>
+        <text x="55" y="92" text-anchor="middle" class="s-fg" font-size="15" font-weight="700">micro:bit</text>
+        <text x="55" y="114" text-anchor="middle" class="s-mut" font-size="13">P0 送資料</text>
+        <g font-size="12" font-family="JetBrains Mono,monospace">
+          <rect x="108" y="30" width="22" height="18" rx="3" fill="#ff4040"/><rect x="132" y="30" width="22" height="18" rx="3" fill="#40a0ff"/><rect x="156" y="30" width="22" height="18" rx="3" fill="#40d070"/><rect x="180" y="30" width="22" height="18" rx="3" fill="#ffd040"/>
+          <text x="155" y="22" text-anchor="middle" class="s-mut">一串顏色紙條</text>
+        </g>
+        <line class="s-line" x1="100" y1="95" x2="200" y2="95" stroke-width="2"/>
+        <polygon class="s-acc" points="200,89 212,95 200,101"/>
+        <g>
+          <rect x="215" y="65" width="70" height="60" rx="8" class="s-box"/><circle cx="250" cy="95" r="16" fill="#ff4040"/><text x="250" y="145" text-anchor="middle" class="s-fg" font-size="14" font-weight="700">第 0 顆</text>
+          <line class="s-line" x1="285" y1="95" x2="320" y2="95" stroke-width="2"/><polygon class="s-acc" points="320,89 332,95 320,101"/>
+          <rect x="335" y="65" width="70" height="60" rx="8" class="s-box"/><circle cx="370" cy="95" r="16" fill="#40a0ff"/><text x="370" y="145" text-anchor="middle" class="s-fg" font-size="14" font-weight="700">第 1 顆</text>
+          <line class="s-line" x1="405" y1="95" x2="440" y2="95" stroke-width="2"/><polygon class="s-acc" points="440,89 452,95 440,101"/>
+          <rect x="455" y="65" width="70" height="60" rx="8" class="s-box"/><circle cx="490" cy="95" r="16" fill="#40d070"/><text x="490" y="145" text-anchor="middle" class="s-fg" font-size="14" font-weight="700">第 2 顆</text>
+          <line class="s-line" x1="525" y1="95" x2="560" y2="95" stroke-width="2"/>
+          <text x="595" y="101" text-anchor="middle" class="s-mut" font-size="22">…9</text>
+        </g>
+        <text x="320" y="178" text-anchor="middle" class="s-mut" font-size="13">每顆燈拿走第一張紙條（自己的顏色），剩下的往下一顆傳</text>
+      </svg>
+      <figcaption>WS2812 也叫 NeoPixel。每顆燈裡有紅、綠、藍三個小燈和一顆小晶片。</figcaption>
+    </figure>
+    <ul>
+      <li><b>只要一條訊號線</b>：micro:bit 從 P0 一次送出 10 顆燈的顏色。</li>
+      <li><b>編號從 0 開始</b>：10 顆燈是第 0 顆到第 9 顆，不是 1 到 10。</li>
+      <li><b>有方向</b>：燈條上印著箭頭，資料只能從箭頭的頭（DIN）流進去。</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">3</span>接線：燈條插到 robot:bit 的 P0</h3>
+    <figure>
+      <svg viewBox="0 0 640 250" role="img" aria-label="robot:bit 接線示意：拔掉蜂鳴器跳線帽，燈條三條線接到 P0 的 G V S">
+        <rect class="s-box" x="20" y="20" width="300" height="210" rx="16"/>
+        <text x="40" y="48" class="s-fg" font-size="16" font-weight="900">robot:bit</text>
+        <rect x="70" y="62" width="200" height="34" rx="4" class="s-off"/>
+        <text x="170" y="84" text-anchor="middle" fill="#fff" font-size="13">micro:bit 插這裡</text>
+        <g>
+          <text x="232" y="128" class="s-fg" font-size="13" font-weight="700">P0</text>
+          <circle cx="240" cy="148" r="7" fill="#222"/><circle cx="240" cy="170" r="7" fill="#e53935"/><circle cx="240" cy="192" r="7" fill="#fbc02d"/>
+          <text x="256" y="153" class="s-mut" font-size="12">G</text><text x="256" y="175" class="s-mut" font-size="12">V</text><text x="256" y="197" class="s-mut" font-size="12">S</text>
+        </g>
+        <g>
+          <rect x="60" y="140" width="110" height="60" rx="8" fill="none" class="s-line" stroke-dasharray="4 3"/>
+          <text x="115" y="162" text-anchor="middle" class="s-fg" font-size="13" font-weight="700">蜂鳴器跳線帽</text>
+          <rect x="95" y="172" width="40" height="16" rx="3" class="s-warn"/>
+          <line x1="88" y1="166" x2="142" y2="194" stroke="#e53935" stroke-width="4"/><line x1="142" y1="166" x2="88" y2="194" stroke="#e53935" stroke-width="4"/>
+          <text x="115" y="218" text-anchor="middle" fill="#e53935" font-size="13" font-weight="900">先拔掉！</text>
+        </g>
+        <path d="M247 148 C330 148 330 120 380 120" stroke="#222" stroke-width="4" fill="none"/>
+        <path d="M247 170 C340 170 340 130 380 130" stroke="#e53935" stroke-width="4" fill="none"/>
+        <path d="M247 192 C350 192 350 140 380 140" stroke="#fbc02d" stroke-width="4" fill="none"/>
+        <rect x="380" y="108" width="240" height="44" rx="6" class="s-off"/>
+        <g fill="#555"><circle cx="402" cy="130" r="8"/><circle cx="426" cy="130" r="8"/><circle cx="450" cy="130" r="8"/><circle cx="474" cy="130" r="8"/><circle cx="498" cy="130" r="8"/><circle cx="522" cy="130" r="8"/><circle cx="546" cy="130" r="8"/><circle cx="570" cy="130" r="8"/><circle cx="594" cy="130" r="8"/></g>
+        <text x="390" y="176" class="s-fg" font-size="13" font-weight="700">DIN ➜ 箭頭朝外</text>
+        <text x="390" y="96" class="s-mut" font-size="13">10 顆 WS2812 燈條</text>
+      </svg>
+      <figcaption>示意圖。實際位置請看板子上的字（絲印），黑線 G、紅線 V、黃線 S 對齊排針顏色。</figcaption>
+    </figure>
+    <ul>
+      <li>拔掉 robot:bit 上「蜂鳴器」的跳線帽。蜂鳴器也接在 P0，不拔的話燈會亂閃還會吱吱叫。</li>
+      <li>燈條插到 P0 的 G、V、S，顏色對好。</li>
+      <li>確認是從燈條的 DIN（箭頭開始的那端）接進去。</li>
+      <li>打開 robot:bit 的電源開關。下載程式還是插 micro:bit 本身的 USB。</li>
+    </ul>
+    <p>兩人一組，互相檢查上面四點都做到了再下一步。</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">4</span>加入 neopixel 擴展積木</h3>
+    <ol>
+      <li>打開 <a href="https://makecode.microbit.org" target="_blank" rel="noopener">makecode.microbit.org</a>，建立新專案。</li>
+      <li>點積木區最下面的「擴充功能」。</li>
+      <li>搜尋 <code>neopixel</code>，點選微軟官方的 <b>neopixel</b>。</li>
+      <li>積木區多出一個藍綠色的「Neopixel」分類就成功了。</li>
+    </ol>
+    <div class="note ok"><b>積木中文字</b>MakeCode 翻譯可能和本頁有一點點不同，看顏色和形狀找就對了。</div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">5</span>範例 1-1：整條變紅色</h3>
+    <div class="two">
+      <div>
+        <div data-prog="l1e1"></div>
+        <p><b>設定 strip 為 NeoPixel…</b>：告訴 micro:bit 燈條接在 P0、有 10 顆。這個積木在「Neopixel」分類最上面，放進「當啟動時」。</p>
+        <p><b>設定亮度 50</b>：亮度可設 0 到 255。50 就夠亮，不刺眼也比較省電。</p>
+        <p><b>顯示顏色 紅色</b>：整條變同一個顏色。</p>
+      </div>
+      <div><div data-sim="l1e1"></div></div>
+    </div>
+    <div data-code="l1e1"></div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">6</span>範例 1-2：A、B、A+B 換顏色</h3>
+    <div class="two">
+      <div><div data-prog="l1e2"></div></div>
+      <div>
+        <div data-sim="l1e2"></div>
+        <p>在右邊模擬器按按鈕，看看燈條應該長怎樣，再跟你的實物比一比。</p>
+      </div>
+    </div>
+    <div data-code="l1e2"></div>
+    <div class="note ok"><b>試試看</b>把 A 改成你最喜歡的顏色。彩虹的 1 到 360 是色相（顏色轉一圈），改成 1 到 120 會變成紅到綠的漸層。</div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">7</span>重要觀念：先畫好，再按「顯示」</h3>
+    <p>燈條積木分兩種。一種做完<b>馬上亮</b>；另一種只是在 micro:bit 心裡「畫好」，要再接一個 <b>strip 顯示</b> 才會送到燈條上。</p>
+    <div class="tbl"><table>
+      <tr><th>做完馬上亮</th><th>要再接「顯示」才會亮</th></tr>
+      <tr><td>顯示顏色<br>顯示彩虹<br>顯示長條圖</td><td>清除<br>設定像素顏色（第幾顆）<br>旋轉像素、位移像素</td></tr>
+    </table></div>
+    <p>這是整個單元最常犯的錯，等一下的挑戰題就會考。</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">8</span>克漏字挑戰<span class="kind">選出空格裡的積木</span></h3>
+    <h4>題目 A：搖一搖，全部熄滅</h4>
+    <div data-prog="l1c1"></div>
+    <h4>題目 B：建立燈條</h4>
+    <div data-prog="l1c2"></div>
+    <p class="score" data-score="v-lesson1"></p>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">9</span>找錯偵探<span class="kind">點出有問題的那一塊積木</span></h3>
+    <div class="bug" data-prog-bug="l1b1"><p class="sym">下載後，燈完全不亮。</p></div>
+    <div class="bug" data-prog-bug="l1b2"><p class="sym">只有前面 5 顆會亮。</p></div>
+    <div class="bug" data-prog-bug="l1b3"><p class="sym">按 A 會變紅，可是搖一搖燈不會熄滅。</p></div>
+    <div class="bug quiz" data-ans="1">
+      <p class="sym">程式全部檢查過都對，燈卻亂閃，板子還發出吱吱聲。最可能是哪裡出問題？</p>
+      <div class="choices"><button type="button">電池沒電</button><button type="button">蜂鳴器跳線帽沒拔</button><button type="button">燈條壞掉</button></div>
+      <p class="fb" aria-live="polite"></p>
+      <p class="explain">蜂鳴器和燈條都接在 P0，訊號互相干擾。程式沒錯，錯在硬體，所以除錯時也要檢查接線。</p>
+    </div>
+  </div>
+
+  <div class="hw">
+    <h3>第 1 節功課：一格一格亮起來</h3>
+    <p>按一下 A，燈條就多亮一顆（第 0 顆、第 1 顆、第 2 顆…）；按 B 全部熄滅、重新開始。</p>
+    <div data-sim="l1hw"></div>
+    <details class="hint"><summary>提示 1</summary><p>做一個變數 <code>n</code> 記住「下一顆要亮第幾顆」，一開始是 0。</p></details>
+    <details class="hint"><summary>提示 2</summary><p>用「strip 設定像素顏色 於 <code>n</code> 為 綠色」，記得再接「strip 顯示」，然後把 <code>n</code> 加 1。</p></details>
+    <details class="hint"><summary>提示 3</summary><p>亮到第 9 顆就是全滿了，用「如果 n &lt; 10」擋住，不然會設定到不存在的第 10 顆。</p></details>
+    <div class="t-only"><div data-code="l1hw" data-open="1"></div></div>
+  </div>
+</section>
+
+<!-- ================= LESSON 2 ================= -->
+<section class="lesson" id="v-lesson2" hidden>
+  <h2>第 2 節　燈會向前跑</h2>
+  <p class="lede">上次讓燈「一格一格亮」，今天讓燈動起來：跑馬燈、調速度，最後搖一下就前進一格，變成計步器的雛形。</p>
+  <ul class="goals"><li>設定第幾顆的顏色</li><li>變數與重複</li><li>旋轉 vs 位移</li><li>按鈕調速度</li><li>搖一步走一格</li></ul>
+  <div class="t-only tip">時間分配：功課檢討 0–6、範例 2-1 6–14、旋轉 vs 位移 14–20、範例 2-2 20–27、範例 2-3 27–33、克漏字＋找錯 33–38、功課 38–40。檢討功課時請兩位同學展示，重點講 n 從 0 開始、到 9 為止。</div>
+
+  <div class="step">
+    <h3><span class="n">1</span>功課檢討：燈的門牌號碼</h3>
+    <p>10 顆燈的門牌是 0 到 9。上次功課用變數 <code>n</code> 指定「第幾顆」，今天要讓 <code>n</code> 自己跑起來。</p>
+    <div class="leds" aria-hidden="true" style="max-width:420px"><div><span>0</span></div><div><span>1</span></div><div><span>2</span></div><div><span>3</span></div><div><span>4</span></div><div><span>5</span></div><div><span>6</span></div><div><span>7</span></div><div><span>8</span></div><div><span>9</span></div></div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">2</span>範例 2-1：一顆燈在跑</h3>
+    <div class="two">
+      <div><div data-prog="l2e1"></div></div>
+      <div><div data-sim="l2e1"></div></div>
+    </div>
+    <p>重複無限次裡面做 5 件事：<b>清除</b>上一顆 → <b>設定第 i 顆</b>為紅 → <b>顯示</b> → 等 0.1 秒 → i 加 1。i 到 10 就回到 0，所以會一直繞圈。</p>
+    <div data-code="l2e1"></div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">3</span>更簡單的方法：旋轉和位移</h3>
+    <figure>
+      <svg viewBox="0 0 640 210" role="img" aria-label="旋轉像素時最後一顆會回到第一顆；位移像素時第一顆補黑色，最後一顆被推出去">
+        <text x="10" y="30" class="s-fg" font-size="15" font-weight="900">旋轉像素 1</text>
+        <text x="10" y="120" class="s-fg" font-size="15" font-weight="900">位移像素 1</text>
+        <g id="row">
+        </g>
+      </svg>
+      <figcaption>旋轉：尾巴的燈會繞回頭，像旋轉木馬。位移：整排往後推，頭補一顆熄滅的燈，尾巴的燈被推出去就不見了。</figcaption>
+    </figure>
+    <div class="note"><b>記住</b>旋轉、位移做完也要接「strip 顯示」才看得到。</div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">4</span>範例 2-2：跑馬燈 ＋ 按鈕調速度</h3>
+    <div class="two">
+      <div><div data-prog="l2e2"></div></div>
+      <div><div data-sim="l2e2"></div>
+        <p>A 變快、B 變慢、A+B 回到原本速度。<code>speed</code> 是每走一格要等幾毫秒，數字越小越快。</p></div>
+    </div>
+    <div data-code="l2e2"></div>
+    <div class="note ok"><b>為什麼 A 要擋住？</b>一直按 A，speed 會變 0 甚至負數。用「如果 speed &lt; 20 就設為 20」設個最快的速度。</div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">5</span>範例 2-3：搖一下，走一格</h3>
+    <div class="two">
+      <div><div data-prog="l2e3"></div>
+        <p>把「重複無限次」拿掉，改成「當搖動」。原地踏步時 micro:bit 會被搖到，燈就往前跑一格。這就是計步器的雛形，下一節會用到。</p></div>
+      <div><div data-sim="l2e3"></div></div>
+    </div>
+    <div data-code="l2e3"></div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">6</span>克漏字挑戰<span class="kind">選出空格裡的積木</span></h3>
+    <h4>題目 A：跑馬燈</h4>
+    <div data-prog="l2c1"></div>
+    <h4>題目 B：搖一步走一格</h4>
+    <div data-prog="l2c2"></div>
+    <p class="score" data-score="v-lesson2"></p>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">7</span>找錯偵探<span class="kind">點出有問題的那一塊積木</span></h3>
+    <div class="bug" data-prog-bug="l2b1"><p class="sym">第 0 顆從來不會亮。</p></div>
+    <div class="bug" data-prog-bug="l2b2"><p class="sym">燈跑完一圈就消失，再也不回來。</p></div>
+    <div class="bug" data-prog-bug="l2b3"><p class="sym">看起來燈全部一直亮著，根本沒在跑。</p></div>
+    <div class="bug" data-prog-bug="l2b4"><p class="sym">A 一直按，按到某一下燈就停住不動了。</p></div>
+  </div>
+
+  <div class="hw">
+    <h3>第 2 節功課：流星燈</h3>
+    <p>做一顆有尾巴的流星：頭最亮，後面兩顆越來越暗，一起往前跑。</p>
+    <div data-sim="l2hw"></div>
+    <details class="hint"><summary>提示 1</summary><p>旋轉像素 1 會讓燈往編號大的方向跑，所以頭要放在第 2 顆，尾巴放第 1、第 0 顆。</p></details>
+    <details class="hint"><summary>提示 2</summary><p>同一種顏色、不同亮度，可以用「色相 / 飽和度 / 亮度」(hsl) 積木，例如色相 200、飽和度 99，亮度分別 50、20、5。</p></details>
+    <p><b>挑戰：</b>讓兩顆不同顏色的燈往同一個方向追逐。</p>
+    <div class="t-only"><div data-code="l2hw" data-open="1"></div></div>
+  </div>
+</section>
+
+<!-- ================= LESSON 3 ================= -->
+<section class="lesson" id="v-lesson3" hidden>
+  <h2>第 3 節　跑步計步器 × 進度條 × 網頁</h2>
+  <p class="lede">食農大使要巡田！每走一步，燈條進度就往前；走到目標燈條變彩虹，步數同時傳到電腦網頁上。</p>
+  <ul class="goals"><li>計步器變數</li><li>長條圖進度條</li><li>如果…就達標</li><li>A / B / A+B 分工</li><li>序列傳到網頁</li></ul>
+  <div class="t-only tip">時間分配：回顧計步器 0–5、範例 3-1 5–13、按鈕分工 13–20、達標慶祝 20–25、序列與網頁 25–33、克漏字＋找錯 33–37、總結 37–40。上課前先用一台電腦測試接收頁能連上 micro:bit。</div>
+
+  <div class="step">
+    <h3><span class="n">1</span>回顧：原本的計步器</h3>
+    <div data-prog="l3r"></div>
+    <p>每搖一次，<code>steps</code> 加 1，再把數字顯示在點陣上。今天把「顯示數字」換成燈條進度條。</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">2</span>範例 3-1：計步進度條</h3>
+    <div class="two">
+      <div><div data-prog="l3e1"></div></div>
+      <div><div data-sim="l3e1"></div>
+        <p>按「搖一搖」走路，看燈條慢慢填滿。</p></div>
+    </div>
+    <div data-code="l3e1"></div>
+    <h4>長條圖積木怎麼算？</h4>
+    <p>「顯示長條圖 steps 最大值 goal」會自己算要亮幾顆：目標 20 步時，大約每走 2 步多亮一顆，走滿 20 步全亮。顏色從藍色漸漸變成紅色。</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">3</span>三個按鈕的工作</h3>
+    <div class="tbl"><table>
+      <tr><th>按鈕</th><th>做什麼</th><th>為什麼</th></tr>
+      <tr><td>A</td><td>steps 歸零，更新燈條</td><td>重新出發</td></tr>
+      <tr><td>B</td><td>點陣顯示步數</td><td>想知道精確數字</td></tr>
+      <tr><td>A+B</td><td>目標加 10 步，點陣顯示新目標</td><td>太簡單就加難度</td></tr>
+    </table></div>
+    <p>這三個按鈕的積木都已經放在範例 3-1 裡了，在模擬器試試看。</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">4</span>達標慶祝</h3>
+    <p>範例裡的「如果 steps ≥ goal 就顯示彩虹」就是慶祝。用「≥」而不是「=」，走超過也照樣慶祝。</p>
+    <div class="note"><b>想加音效？（micro:bit V2 才有內建喇叭）</b>V2 播聲音時預設也會從 P0 送出聲音訊號，會干擾燈條。請在「當啟動時」加一個「設定音訊腳位啟用 false」（在 進階 → 腳位），聲音就只從內建喇叭出來。</div>
+    <div data-prog="l3snd"></div>
+    <div data-code="l3snd"></div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">5</span>把步數傳到網頁</h3>
+    <figure>
+      <svg viewBox="0 0 640 150" role="img" aria-label="micro:bit 透過 USB 線把 steps:12 這樣的文字傳到電腦，網頁讀到後顯示進度">
+        <rect class="s-box" x="10" y="40" width="130" height="70" rx="10"/><text x="75" y="72" text-anchor="middle" class="s-fg" font-size="15" font-weight="700">micro:bit</text><text x="75" y="94" text-anchor="middle" class="s-mut" font-size="12">序列寫入數值</text>
+        <line class="s-line" x1="140" y1="75" x2="250" y2="75" stroke-width="3" stroke-dasharray="7 5"/><text x="195" y="62" text-anchor="middle" class="s-mut" font-size="12">USB 線</text>
+        <rect x="160" y="88" width="80" height="22" rx="4" class="s-acc"/><text x="200" y="104" text-anchor="middle" fill="#fff" font-size="12" font-family="JetBrains Mono,monospace">steps:12</text>
+        <rect class="s-box" x="255" y="40" width="130" height="70" rx="10"/><text x="320" y="72" text-anchor="middle" class="s-fg" font-size="15" font-weight="700">電腦</text><text x="320" y="94" text-anchor="middle" class="s-mut" font-size="12">Chrome / Edge</text>
+        <line class="s-line" x1="385" y1="75" x2="440" y2="75" stroke-width="2"/><polygon class="s-acc" points="440,69 452,75 440,81"/>
+        <rect class="s-box" x="455" y="25" width="175" height="100" rx="10"/><text x="542" y="52" text-anchor="middle" class="s-fg" font-size="14" font-weight="700">進度接收頁</text>
+        <g><rect x="470" y="70" width="14" height="22" rx="3" class="s-acc"/><rect x="486" y="70" width="14" height="22" rx="3" class="s-acc"/><rect x="502" y="70" width="14" height="22" rx="3" class="s-acc"/><rect x="518" y="70" width="14" height="22" rx="3" class="s-acc"/><rect x="534" y="70" width="14" height="22" rx="3" class="s-acc"/><rect x="550" y="70" width="14" height="22" rx="3" class="s-acc"/><rect x="566" y="70" width="14" height="22" rx="3" class="s-off"/><rect x="582" y="70" width="14" height="22" rx="3" class="s-off"/><rect x="598" y="70" width="14" height="22" rx="3" class="s-off"/></g>
+        <text x="542" y="112" text-anchor="middle" class="s-mut" font-size="12">12 / 20 步</text>
+      </svg>
+      <figcaption>「序列寫入數值 "steps" = steps」會送出一行 <code>steps:12</code>，網頁讀到就更新。</figcaption>
+    </figure>
+    <ol>
+      <li>範例 3-1 已經在搖動和按 A、A+B 時送出 <code>steps</code> 和 <code>goal</code>。</li>
+      <li><b>先用 MakeCode 看</b>：用 USB 連線下載後，模擬器下方會出現「顯示資料 裝置」，點進去就能看到步數折線圖。</li>
+      <li><b>再用進度接收頁</b>：關掉 MakeCode 的連線，打開 <a href="https://lester47.github.io/ai-food-course/ws2812/receiver.html" target="_blank" rel="noopener">巡田步數接收頁</a>，按「連接 micro:bit」。做法看「網頁接收步數」分頁。</li>
+    </ol>
+    <div class="note"><b>名字只用英文</b>序列名稱請寫 <code>steps</code>，不要用中文或加空格，網頁才認得。</div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">6</span>克漏字挑戰<span class="kind">選出空格裡的積木</span></h3>
+    <h4>題目 A：搖一步</h4>
+    <div data-prog="l3c1"></div>
+    <h4>題目 B：達標判斷</h4>
+    <div data-prog="l3c2"></div>
+    <p class="score" data-score="v-lesson3"></p>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">7</span>找錯偵探<span class="kind">點出有問題的那一塊積木</span></h3>
+    <div class="bug" data-prog-bug="l3b1"><p class="sym">燈條會動，可是網頁一直收不到步數。</p></div>
+    <div class="bug" data-prog-bug="l3b2"><p class="sym">不管走幾步，燈條都只有第 0 顆亮暗暗的黃色。</p></div>
+    <div class="bug" data-prog-bug="l3b3"><p class="sym">按 A 歸零以後，燈條還停在舊的進度。</p></div>
+    <div class="bug" data-prog-bug="l3b4"><p class="sym">剛好走到目標那一步有彩虹，多走一步彩虹就不見了。</p></div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">8</span>總結：三節課的積木地圖</h3>
+    <div class="map">
+      <div><h4>輸入：發生什麼事</h4><ul><li>當按鈕 A / B / A+B</li><li>當搖動</li><li>當啟動時、重複無限次</li></ul></div>
+      <div><h4>處理：記住和判斷</h4><ul><li>變數 n、i、speed、steps、goal</li><li>改變 … 加 1</li><li>如果 … 就</li></ul></div>
+      <div><h4>輸出：讓人看到</h4><ul><li>燈條：顏色、彩虹、單顆、旋轉、長條圖</li><li>點陣：顯示數字</li><li>序列：傳到電腦網頁</li></ul></div>
+    </div>
+    <p>記住口訣：<b>先畫好，再顯示；編號從 0 開始；P0 接燈要拔跳線帽。</b></p>
+  </div>
+
+  <div class="hw">
+    <h3>第 3 節功課：我的巡田目標</h3>
+    <p>幫自己設一個巡田目標（例如走完一畦菜園 30 步）。燈條顏色要顯示進度：未到一半整條紅色、超過一半黃色、達標彩虹。下次上課分享你的目標和成果。</p>
+    <div data-sim="l3hw"></div>
+    <details class="hint"><summary>提示</summary><p>用「如果 … 否則如果 … 否則」。「超過一半」可以寫成 <code>steps × 2 ≥ goal</code>，就不用算小數。</p></details>
+    <p><b>挑戰：</b>不要整條同色，讓長條圖本身的顏色跟著階段變。</p>
+    <div class="t-only"><div data-code="l3hw" data-open="1"></div></div>
+  </div>
+</section>
+
+<!-- ================= WEB ================= -->
+<section class="lesson" id="v-web" hidden>
+  <h2>網頁接收步數</h2>
+  <p class="lede">用 Chrome 或 Edge 打開「巡田步數接收頁」，micro:bit 每走一步，網頁上的跑道就往前一格。這一步也是第 2 週「USB 資料進網頁」的預習。</p>
+
+  <div class="step">
+    <h3><span class="n">1</span>先看看會長怎樣</h3>
+    <p>下面是示範，用按鈕假裝 micro:bit 傳來步數。</p>
+    <div class="two">
+      <div>
+        <div class="big"><span id="dSteps">0</span><span style="font-size:20px;color:var(--muted)"> / <span id="dGoal">20</span> 步</span></div>
+        <div class="track" id="dTrack"></div>
+        <p id="dMsg" class="score">還沒出發</p>
+      </div>
+      <div class="sim" style="margin:0">
+        <div class="ttl"><span>micro:bit 傳出的文字</span></div>
+        <div class="log" id="dLog"></div>
+        <div class="ctl"><button type="button" id="dStep">搖一下（steps +1）</button><button type="button" id="dReset" class="rst">A 歸零</button><button type="button" id="dGoalUp" class="rst">A+B 目標 +10</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">2</span>上課時怎麼用</h3>
+    <ol>
+            <li>micro:bit 下載好第 3 節的程式，USB 線保持接著電腦。</li>
+      <li>如果 MakeCode 有連著 micro:bit，先把 MakeCode 分頁關掉，不然網頁連不上。</li>
+      <li>用 <b>Chrome 或 Edge</b> 打開 <a href="https://lester47.github.io/ai-food-course/ws2812/receiver.html" target="_blank" rel="noopener">巡田步數接收頁</a>，按「連接 micro:bit」，選「BBC micro:bit」那一個。</li>
+      <li>開始原地踏步，網頁跟著動！</li>
+    </ol>
+    <p><a class="copy" style="display:inline-block;margin:4px 0;text-decoration:none" href="https://lester47.github.io/ai-food-course/ws2812/receiver.html" target="_blank" rel="noopener">開啟巡田步數接收頁 ↗</a></p>
+    <div class="note"><b>只能用電腦版 Chrome / Edge</b>網頁讀 USB 要用瀏覽器的 Web Serial 功能，手機、Safari、Firefox 都不支援。</div>
+  </div>
+
+  <div class="step">
+    <h3><span class="n">3</span>連不上時檢查這些</h3>
+    <div class="tbl"><table>
+      <tr><th>情況</th><th>怎麼辦</th></tr>
+      <tr><td>按「連接」沒反應或說不支援</td><td>換 Chrome 或 Edge 電腦版，不要用手機、Safari 或 Firefox。</td></tr>
+      <tr><td>清單裡找不到 micro:bit</td><td>換一條 USB 線（有些只能充電），或重新插拔。</td></tr>
+      <tr><td>連上了但數字不動</td><td>檢查程式有沒有「序列寫入數值 "steps"」，名稱要完全一樣。</td></tr>
+      <tr><td>說連接埠被占用</td><td>關掉 MakeCode 分頁或其他接收頁，再試一次。</td></tr>
+    </table></div>
+    <p>真的連不上，就用 MakeCode 的「顯示資料 裝置」看步數圖表，效果一樣。</p>
+  </div>
+</section>
+
+<footer>參考：<a href="https://github.com/microsoft/pxt-neopixel" target="_blank" rel="noopener">microsoft/pxt-neopixel</a>・<a href="https://kittenbot-docs-en.readthedocs.io/en/latest/mainboards/01Robotbit.html" target="_blank" rel="noopener">KittenBot Robotbit 文件</a>。積木圖為仿 MakeCode 配色示意，實際中文字樣以編輯器為準。</footer>
+</div></main>
+
+<script>
+/* ---------- block programs ----------
+ line: "[!]<indent> <kind>.<cat>|text"  kind: h hat, s stmt, c C-block top, e C-block end
+ text: [slot]  ((cat|inline reporter))  {?answer|opt1,opt2,...}  */
+const P = {
+l1r:["0 h.inp|當按鈕 [A] 被按下","1 s.bas|顯示圖示 [♥]","0 h.inp|當按鈕 [B] 被按下","1 s.bas|顯示圖示 [☺]","0 h.inp|當按鈕 [A+B] 被按下","1 s.bas|清空畫面"],
+l1e1:["0 h.bas|當啟動時","1 s.var|設定 strip 為 ((np|NeoPixel 於 [P0] 帶 [10] 顆 LED [RGB (GRB)]))","1 s.np|strip 設定亮度 [50]","1 s.np|strip 顯示顏色 ((np|[紅色]))"],
+l1e2:["0 h.bas|當啟動時","1 s.var|設定 strip 為 ((np|NeoPixel 於 [P0] 帶 [10] 顆 LED [RGB (GRB)]))","1 s.np|strip 設定亮度 [50]",
+ "0 h.inp|當按鈕 [A] 被按下","1 s.np|strip 顯示顏色 ((np|[紅色]))",
+ "0 h.inp|當按鈕 [B] 被按下","1 s.np|strip 顯示顏色 ((np|[藍色]))",
+ "0 h.inp|當按鈕 [A+B] 被按下","1 s.np|strip 顯示彩虹 從 [1] 到 [360]",
+ "0 h.inp|當 [搖動]","1 s.np|strip 清除","1 s.np|strip 顯示"],
+l1c1:["0 h.inp|當 [搖動]","1 s.np|strip {?清除|顯示彩虹,清除,設定亮度}","1 s.np|strip {?顯示|清除,顯示,顯示顏色}"],
+l1c2:["0 h.bas|當啟動時","1 s.var|設定 strip 為 ((np|NeoPixel 於 {?P0|P1,P0,P16} 帶 {?10|5,4,10} 顆 LED [RGB (GRB)]))","1 s.np|strip 設定亮度 [50]"],
+l1b1:["0 h.bas|當啟動時","!1 s.var|設定 strip 為 ((np|NeoPixel 於 [P1] 帶 [10] 顆 LED [RGB (GRB)]))","1 s.np|strip 設定亮度 [50]","1 s.np|strip 顯示顏色 ((np|[紅色]))"],
+l1b2:["0 h.bas|當啟動時","!1 s.var|設定 strip 為 ((np|NeoPixel 於 [P0] 帶 [5] 顆 LED [RGB (GRB)]))","1 s.np|strip 設定亮度 [50]","1 s.np|strip 顯示顏色 ((np|[綠色]))"],
+l1b3:["0 h.inp|當按鈕 [A] 被按下","1 s.np|strip 顯示顏色 ((np|[紅色]))","0 h.inp|當 [搖動]","!1 s.np|strip 清除"],
+l2e1:["0 h.bas|當啟動時","1 s.var|設定 strip 為 ((np|NeoPixel 於 [P0] 帶 [10] 顆 LED …))","1 s.np|strip 設定亮度 [50]","1 s.var|設定 i 為 [0]",
+ "0 h.bas|重複無限次","1 s.np|strip 清除","1 s.np|strip 設定像素顏色 於 ((var|i)) 為 ((np|[紅色]))","1 s.np|strip 顯示","1 s.bas|暫停 (ms) [100]","1 s.var|改變 i 加 [1]",
+ "1 c.logic|如果 ((logic|((var|i)) [≥] [10])) 那麼","2 s.var|設定 i 為 [0]","1 e.logic|"],
+l2e2:["0 h.bas|當啟動時","1 s.var|設定 strip 為 ((np|NeoPixel 於 [P0] 帶 [10] 顆 LED …))","1 s.np|strip 設定亮度 [50]","1 s.var|設定 speed 為 [100]","1 s.np|strip 設定像素顏色 於 [0] 為 ((np|[綠色]))","1 s.np|strip 顯示",
+ "0 h.bas|重複無限次","1 s.np|strip 旋轉像素 [1]","1 s.np|strip 顯示","1 s.bas|暫停 (ms) ((var|speed))",
+ "0 h.inp|當按鈕 [A] 被按下","1 s.var|改變 speed 加 [-20]","1 c.logic|如果 ((logic|((var|speed)) [&lt;] [20])) 那麼","2 s.var|設定 speed 為 [20]","1 e.logic|",
+ "0 h.inp|當按鈕 [B] 被按下","1 s.var|改變 speed 加 [20]",
+ "0 h.inp|當按鈕 [A+B] 被按下","1 s.var|設定 speed 為 [100]"],
+l2e3:["0 h.bas|當啟動時","1 s.var|設定 strip 為 ((np|NeoPixel 於 [P0] 帶 [10] 顆 LED …))","1 s.np|strip 設定亮度 [50]","1 s.np|strip 設定像素顏色 於 [0] 為 ((np|[橘色]))","1 s.np|strip 顯示",
+ "0 h.inp|當 [搖動]","1 s.np|strip 旋轉像素 [1]","1 s.np|strip 顯示"],
+l2c1:["0 h.bas|重複無限次","1 s.np|strip 旋轉像素 {?1|10,0,1}","1 s.np|strip {?顯示|清除,顯示,顯示彩虹}","1 s.bas|暫停 (ms) {?speed|steps,speed,0}"],
+l2c2:["0 h.inp|當 [搖動]","1 s.np|strip {?旋轉像素|位移像素,旋轉像素,清除} [1]","1 s.np|strip {?顯示|顯示,設定亮度,清除}"],
+l2b1:["0 h.bas|重複無限次","1 s.np|strip 清除","1 s.np|strip 設定像素顏色 於 ((var|i)) 為 ((np|[紅色]))","1 s.np|strip 顯示","1 s.bas|暫停 (ms) [100]","1 s.var|改變 i 加 [1]","1 c.logic|如果 ((logic|((var|i)) [≥] [10])) 那麼","!2 s.var|設定 i 為 [1]","1 e.logic|"],
+l2b2:["0 h.bas|重複無限次","!1 s.np|strip 位移像素 [1]","1 s.np|strip 顯示","1 s.bas|暫停 (ms) ((var|speed))"],
+l2b3:["0 h.bas|重複無限次","1 s.np|strip 旋轉像素 [1]","1 s.np|strip 顯示","!1 s.bas|暫停 (ms) [0]"],
+l2b4:["0 h.inp|當按鈕 [A] 被按下","!1 s.var|改變 speed 加 [-20]","0 h.inp|當按鈕 [B] 被按下","1 s.var|改變 speed 加 [20]"],
+l3r:["0 h.bas|當啟動時","1 s.var|設定 steps 為 [0]","0 h.inp|當 [搖動]","1 s.var|改變 steps 加 [1]","1 s.bas|顯示數字 ((var|steps))"],
+l3e1:["0 h.bas|當啟動時","1 s.var|設定 strip 為 ((np|NeoPixel 於 [P0] 帶 [10] 顆 LED …))","1 s.np|strip 設定亮度 [50]","1 s.var|設定 steps 為 [0]","1 s.var|設定 goal 為 [20]","1 s.np|strip 顯示長條圖 ((var|steps)) 最大值 ((var|goal))",
+ "0 h.inp|當 [搖動]","1 s.var|改變 steps 加 [1]","1 s.np|strip 顯示長條圖 ((var|steps)) 最大值 ((var|goal))","1 s.ser|序列寫入數值 [\"steps\"] = ((var|steps))",
+ "1 c.logic|如果 ((logic|((var|steps)) [≥] ((var|goal)))) 那麼","2 s.np|strip 顯示彩虹 從 [1] 到 [360]","1 e.logic|",
+ "0 h.inp|當按鈕 [A] 被按下","1 s.var|設定 steps 為 [0]","1 s.np|strip 顯示長條圖 ((var|steps)) 最大值 ((var|goal))","1 s.ser|序列寫入數值 [\"steps\"] = ((var|steps))",
+ "0 h.inp|當按鈕 [B] 被按下","1 s.bas|顯示數字 ((var|steps))",
+ "0 h.inp|當按鈕 [A+B] 被按下","1 s.var|改變 goal 加 [10]","1 s.bas|顯示數字 ((var|goal))","1 s.np|strip 顯示長條圖 ((var|steps)) 最大值 ((var|goal))","1 s.ser|序列寫入數值 [\"goal\"] = ((var|goal))"],
+l3snd:["0 h.bas|當啟動時（加在最前面）","1 s.pins|設定音訊腳位啟用 [false]","0 s.bas|⋯ 在「如果 steps ≥ goal」裡面再加：","1 s.mus|播放音效 [giggle] [在背景]"],
+l3c1:["0 h.inp|當 [搖動]","1 s.var|改變 steps 加 {?1|10,1,0}","1 s.np|strip 顯示長條圖 {?steps|goal,steps,speed} 最大值 {?goal|steps,10,goal}","1 s.ser|序列寫入數值 [\"steps\"] = {?steps|goal,steps,i}"],
+l3c2:["1 c.logic|如果 ((logic|((var|steps)) {?≥|=,≥,&lt;} ((var|goal)))) 那麼","2 s.np|strip {?顯示彩虹|清除,顯示彩虹,旋轉像素}","1 e.logic|"],
+l3b1:["0 h.inp|當 [搖動]","1 s.var|改變 steps 加 [1]","1 s.np|strip 顯示長條圖 ((var|steps)) 最大值 ((var|goal))","!1 s.ser|序列寫入數值 [\"步 數\"] = ((var|steps))"],
+l3b2:["0 h.inp|當 [搖動]","1 s.var|改變 steps 加 [1]","!1 s.np|strip 顯示長條圖 ((var|steps)) 最大值 [0]"],
+l3b3:["0 h.inp|當按鈕 [A] 被按下","!1 s.var|設定 steps 為 [0]","1 s.ser|序列寫入數值 [\"steps\"] = ((var|steps))"],
+l3b4:["0 h.inp|當 [搖動]","1 s.var|改變 steps 加 [1]","1 s.np|strip 顯示長條圖 ((var|steps)) 最大值 ((var|goal))","!1 c.logic|如果 ((logic|((var|steps)) [=] ((var|goal)))) 那麼","2 s.np|strip 顯示彩虹 從 [1] 到 [360]","1 e.logic|"]
+};
+const BUGX = {
+l1b1:"燈條接在 P0，程式卻寫 P1，訊號送錯地方，燈當然不亮。",
+l1b2:"燈有 10 顆，程式只建立 5 顆，後面 5 顆收不到顏色。",
+l1b3:"「清除」只是在心裡擦掉，後面要再接「strip 顯示」燈才會真的熄滅。",
+l2b1:"燈的編號從 0 開始。i 回到 1 的話，第 0 顆永遠輪不到。",
+l2b2:"位移會把燈推出去、頭補黑色，所以跑一圈就沒了。改成「旋轉像素」。",
+l2b3:"暫停 0 毫秒等於沒有暫停，燈跑太快，眼睛看起來像全亮。改回 speed 或 100。",
+l2b4:"speed 一直減會變成 0 或負數，暫停就出錯。要加「如果 speed &lt; 20 就設為 20」。",
+l3b1:"序列名稱用了中文和空格，網頁認不得。改成英文 \"steps\"。",
+l3b2:"最大值是 0，長條圖沒辦法算比例，只會亮第 0 顆黃燈。最大值要放 goal。",
+l3b3:"steps 歸零了，但燈條沒有重畫。要再加「strip 顯示長條圖 steps 最大值 goal」。",
+l3b4:"「=」只有剛好相等那一步成立，走超過就不慶祝。改成「≥」。"
+};
+const CODE = {
+l1e1:`let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(50)
+strip.showColor(neopixel.colors(NeoPixelColors.Red))`,
+l1e2:`let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(50)
+input.onButtonPressed(Button.A, function () {
+    strip.showColor(neopixel.colors(NeoPixelColors.Red))
+})
+input.onButtonPressed(Button.B, function () {
+    strip.showColor(neopixel.colors(NeoPixelColors.Blue))
+})
+input.onButtonPressed(Button.AB, function () {
+    strip.showRainbow(1, 360)
+})
+input.onGesture(Gesture.Shake, function () {
+    strip.clear()
+    strip.show()
+})`,
+l1hw:`let n = 0
+let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(50)
+input.onButtonPressed(Button.A, function () {
+    if (n < 10) {
+        strip.setPixelColor(n, neopixel.colors(NeoPixelColors.Green))
+        strip.show()
+        n += 1
+    }
+})
+input.onButtonPressed(Button.B, function () {
+    strip.clear()
+    strip.show()
+    n = 0
+})`,
+l2e1:`let i = 0
+let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(50)
+basic.forever(function () {
+    strip.clear()
+    strip.setPixelColor(i, neopixel.colors(NeoPixelColors.Red))
+    strip.show()
+    basic.pause(100)
+    i += 1
+    if (i >= 10) {
+        i = 0
+    }
+})`,
+l2e2:`let speed = 100
+let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(50)
+strip.setPixelColor(0, neopixel.colors(NeoPixelColors.Green))
+strip.show()
+basic.forever(function () {
+    strip.rotate(1)
+    strip.show()
+    basic.pause(speed)
+})
+input.onButtonPressed(Button.A, function () {
+    speed += -20
+    if (speed < 20) {
+        speed = 20
+    }
+})
+input.onButtonPressed(Button.B, function () {
+    speed += 20
+})
+input.onButtonPressed(Button.AB, function () {
+    speed = 100
+})`,
+l2e3:`let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(50)
+strip.setPixelColor(0, neopixel.colors(NeoPixelColors.Orange))
+strip.show()
+input.onGesture(Gesture.Shake, function () {
+    strip.rotate(1)
+    strip.show()
+})`,
+l2hw:`let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(80)
+strip.setPixelColor(2, neopixel.hsl(200, 99, 50))
+strip.setPixelColor(1, neopixel.hsl(200, 99, 20))
+strip.setPixelColor(0, neopixel.hsl(200, 99, 5))
+strip.show()
+basic.forever(function () {
+    strip.rotate(1)
+    strip.show()
+    basic.pause(100)
+})`,
+l3e1:`let steps = 0
+let goal = 20
+let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(50)
+strip.showBarGraph(steps, goal)
+input.onGesture(Gesture.Shake, function () {
+    steps += 1
+    strip.showBarGraph(steps, goal)
+    serial.writeValue("steps", steps)
+    if (steps >= goal) {
+        strip.showRainbow(1, 360)
+    }
+})
+input.onButtonPressed(Button.A, function () {
+    steps = 0
+    strip.showBarGraph(steps, goal)
+    serial.writeValue("steps", steps)
+})
+input.onButtonPressed(Button.B, function () {
+    basic.showNumber(steps)
+})
+input.onButtonPressed(Button.AB, function () {
+    goal += 10
+    basic.showNumber(goal)
+    strip.showBarGraph(steps, goal)
+    serial.writeValue("goal", goal)
+})`,
+l3snd:`// 加在程式最前面（當啟動時）
+pins.setAudioPinEnabled(false)
+// 加在 if (steps >= goal) 裡面
+music.play(music.builtinPlayableSoundEffect(soundExpression.giggle), music.PlaybackMode.InBackground)`,
+l3hw:`let steps = 0
+let goal = 30
+let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(50)
+function update () {
+    if (steps >= goal) {
+        strip.showRainbow(1, 360)
+    } else if (steps * 2 >= goal) {
+        strip.showColor(neopixel.colors(NeoPixelColors.Yellow))
+    } else {
+        strip.showColor(neopixel.colors(NeoPixelColors.Red))
+    }
+    serial.writeValue("steps", steps)
+}
+update()
+input.onGesture(Gesture.Shake, function () {
+    steps += 1
+    update()
+})
+input.onButtonPressed(Button.A, function () {
+    steps = 0
+    update()
+})`
+};
+
+/* ---------- render blocks ---------- */
+function parts(t){
+  t=t.replace(/\{\?([^|}]+)\|([^}]+)\}/g,(m,a,o)=>`<select class="blank" data-ans="${a}" aria-label="填空"><option value="">？</option>${o.split(',').map(x=>`<option>${x}</option>`).join('')}</select>`);
+  t=t.replace(/\[([^\]]+)\]/g,'<span class="slot">$1</span>');
+  let prev; do{prev=t;t=t.replace(/\(\((\w+)\|((?:(?!\(\()[\s\S])*?)\)\)/,'<span class="rep $1">$2</span>');}while(t!==prev);
+  return t;
+}
+function prog(key,clickable){
+  return '<div class="blocks">'+P[key].map((l,i)=>{
+    const m=l.match(/^(!?)(\d) (\w)\.(\w+)\|(.*)$/);
+    const att=clickable?' tabindex="0" role="button"':'';
+    return `<div class="b k-${m[3]} ${m[4]}" style="--i:${m[2]}"${m[1]?' data-bug="1"':''}${m[3]==='e'?'':att}>${parts(m[5])}</div>`;
+  }).join('')+'</div>';
+}
+document.querySelectorAll('[data-prog]').forEach(el=>el.innerHTML=prog(el.dataset.prog));
+document.querySelectorAll('[data-prog-bug]').forEach(el=>{
+  const k=el.dataset.progBug;
+  el.insertAdjacentHTML('beforeend',prog(k,true)+'<p class="fb" aria-live="polite">點一下你覺得錯的積木。</p><p class="explain">'+BUGX[k]+'</p>');
+});
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+document.querySelectorAll('[data-code]').forEach(el=>{
+  const k=el.dataset.code;
+  el.innerHTML=`<details class="code"${el.dataset.open?' open':''}><summary>${el.dataset.open?'參考答案（JavaScript）':'看 JavaScript（可貼進 MakeCode）'}</summary><pre>${esc(CODE[k])}</pre><button type="button" class="copy">複製程式</button></details>`;
+  el.querySelector('.copy').addEventListener('click',e=>{
+    const b=e.currentTarget, pre=el.querySelector('pre');
+    const done=()=>{b.textContent='已複製';setTimeout(()=>b.textContent='複製程式',1500)};
+    const fallback=()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='已選取，請按 Ctrl+C'};
+    try{navigator.clipboard.writeText(CODE[k]).then(done,fallback)}catch(_){fallback()}
+  });
+});
+
+/* ---------- cloze ---------- */
+function updateScore(sec){
+  const sel=sec.querySelectorAll('select.blank'), ok=[...sel].filter(s=>s.value===s.dataset.ans).length;
+  const out=sec.querySelector('.score[data-score]');
+  if(out) out.innerHTML=ok===sel.length?`<b>全部答對！${ok} / ${sel.length}</b>`:`答對 <b>${ok}</b> / ${sel.length} 格`;
+}
+document.querySelectorAll('select.blank').forEach(s=>s.addEventListener('change',()=>{
+  s.classList.remove('ok','no'); void s.offsetWidth;
+  if(s.value) s.classList.add(s.value===s.dataset.ans?'ok':'no');
+  updateScore(s.closest('section'));
+}));
+document.querySelectorAll('section.lesson').forEach(updateScore);
+
+/* ---------- bug hunt ---------- */
+document.querySelectorAll('.bug[data-prog-bug]').forEach(box=>{
+  const fb=box.querySelector('.fb');
+  box.querySelectorAll('.b[role=button]').forEach(b=>{
+    const act=()=>{
+      if(b.dataset.bug){b.classList.add('found');box.classList.add('solved');fb.textContent='找到了！';}
+      else{b.classList.remove('miss');void b.offsetWidth;b.classList.add('miss');fb.textContent='這塊沒問題，再找找。';}
+    };
+    b.addEventListener('click',act);
+    b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}});
+  });
+});
+document.querySelectorAll('.bug.quiz').forEach(box=>{
+  const fb=box.querySelector('.fb');
+  box.querySelectorAll('.choices button').forEach((b,i)=>b.addEventListener('click',()=>{
+    if(String(i)===box.dataset.ans){b.classList.add('ok');box.classList.add('solved');fb.textContent='答對了！';}
+    else{b.classList.add('no');fb.textContent='不是這個，再想想。';}
+  }));
+});
+
+/* ---------- rotate vs shift figure ---------- */
+(function(){
+  const g=document.getElementById('row'); if(!g) return;
+  const C=['#ff4040','#ff9a30','#ffd040','#40d070','#40a0ff',null,null,null,null,'#c070ff'];
+  const rot=[C[9],...C.slice(0,9)], sh=[null,...C.slice(0,9)];
+  const NS='http://www.w3.org/2000/svg';
+  function row(y,arr,label){
+    const t=document.createElementNS(NS,'text');t.setAttribute('x',10);t.setAttribute('y',y+18);t.setAttribute('class','s-mut');t.setAttribute('font-size','12');t.textContent=label;g.appendChild(t);
+    arr.forEach((c,i)=>{const e=document.createElementNS(NS,'circle');e.setAttribute('cx',120+i*36);e.setAttribute('cy',y+14);e.setAttribute('r',12);if(c)e.setAttribute('fill',c);else e.setAttribute('class','s-off');g.appendChild(e);});
+  }
+  row(38,C,'之前');row(66,rot,'之後');row(128,C,'之前');row(156,sh,'之後');
+  const p=document.createElementNS(NS,'text');p.setAttribute('x',120+9*36+24);p.setAttribute('y',84);p.setAttribute('class','s-acc');p.setAttribute('font-size','12');p.textContent='紫色繞回第 0 顆';g.appendChild(p);
+  const q=document.createElementNS(NS,'text');q.setAttribute('x',120+9*36+24);q.setAttribute('y',174);q.setAttribute('class','s-warn');q.setAttribute('font-size','12');q.textContent='紫色不見了';g.appendChild(q);
+  g.closest('svg').setAttribute('viewBox','0 0 640 200');
+})();
+
+/* ---------- LED simulator ---------- */
+const NAMED={red:'#ff3030',blue:'#3070ff',green:'#20d060',orange:'#ff8a20',yellow:'#ffd820'};
+class Sim{
+  constructor(el,cfg){
+    this.el=el;this.cfg=cfg;
+    const btn={A:'A',B:'B',AB:'A+B',shake:'搖一搖'};
+    el.className='sim';
+    el.innerHTML=`<div class="ttl"><span>燈條模擬器・${cfg.title||''}</span><span>P0 × 10</span></div>
+      <div class="leds">${Array.from({length:10},(_,i)=>`<div><span>${i}</span></div>`).join('')}</div>
+      <div class="ctl">${(cfg.buttons||[]).map(b=>`<button type="button" data-b="${b}" class="${b==='AB'?'ab':''}">${btn[b]}</button>`).join('')}<button type="button" class="rst" data-b="reset">重新開始</button></div>
+      <div class="ro"></div>${cfg.serial?'<div class="log"></div>':''}`;
+    this.leds=[...el.querySelectorAll('.leds div')];this.ro=el.querySelector('.ro');this.logEl=el.querySelector('.log');
+    el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.b;if(k==='reset')this.reset();else if(cfg.on&&cfg.on[k]){cfg.on[k](this);this.readout()}}));
+    this.reset();
+  }
+  reset(){clearTimeout(this.t);this.buf=Array(10).fill(null);this.shown=Array(10).fill(null);this.v={};this.disp='';if(this.logEl)this.logEl.textContent='';this.paint();this.cfg.start&&this.cfg.start(this);this.readout();if(this.cfg.loop)this.tick();}
+  tick(){const d=this.cfg.loop(this);this.readout();this.t=setTimeout(()=>this.tick(),Math.max(d||100,30));}
+  paint(){this.leds.forEach((d,i)=>{const c=this.shown[i];d.style.background=c||'';d.style.boxShadow=c?`0 0 12px ${c}`:'';});}
+  show(){this.shown=this.buf.slice();this.paint();}
+  showColor(c){this.buf.fill(NAMED[c]||c);this.show();}
+  rainbow(){this.buf=this.buf.map((_,i)=>`hsl(${1+i*36} 100% 55%)`);this.show();}
+  clear(){this.buf.fill(null);}
+  set(i,c){if(i>=0&&i<10)this.buf[i]=NAMED[c]||c;}
+  rotate(){this.buf.unshift(this.buf.pop());}
+  bar(v,h){
+    if(h<=0){this.buf=this.buf.map((_,i)=>i===0?'#666600':null);this.show();return;}
+    const n=Math.floor(v*10/h);
+    if(n===0){this.buf=this.buf.map((_,i)=>i===0?'#666600':null);}
+    else this.buf=this.buf.map((_,i)=>{if(i>n)return null;const b=Math.round(i*255/9);return `rgb(${b},0,${255-b})`;});
+    this.show();
+  }
+  serial(k,val){if(this.logEl){this.logEl.textContent+=`${k}:${val}\n`;this.logEl.scrollTop=1e6;}}
+  readout(){const r=this.cfg.readout?this.cfg.readout(this):'';this.ro.innerHTML=r+(this.disp?`<span>點陣：${this.disp}</span>`:'');}
+}
+const S={
+  l1e1:{title:'範例 1-1',start:s=>s.showColor('red')},
+  l1e2:{title:'範例 1-2',buttons:['A','B','AB','shake'],on:{A:s=>s.showColor('red'),B:s=>s.showColor('blue'),AB:s=>s.rainbow(),shake:s=>{s.clear();s.show()}}},
+  l1hw:{title:'功課目標效果',buttons:['A','B'],start:s=>s.v.n=0,on:{A:s=>{if(s.v.n<10){s.set(s.v.n,'green');s.show();s.v.n++}},B:s=>{s.clear();s.show();s.v.n=0}},readout:s=>`<span>n = ${s.v.n}</span>`},
+  l2e1:{title:'範例 2-1',start:s=>s.v.i=0,loop:s=>{s.clear();s.set(s.v.i,'red');s.show();s.v.i++;if(s.v.i>=10)s.v.i=0;return 100},readout:s=>`<span>i = ${s.v.i}</span>`},
+  l2e2:{title:'範例 2-2',buttons:['A','B','AB'],start:s=>{s.v.speed=100;s.set(0,'green');s.show()},loop:s=>{s.rotate();s.show();return s.v.speed},
+    on:{A:s=>{s.v.speed-=20;if(s.v.speed<20)s.v.speed=20},B:s=>s.v.speed+=20,AB:s=>s.v.speed=100},readout:s=>`<span>speed = ${s.v.speed} ms</span>`},
+  l2e3:{title:'範例 2-3',buttons:['shake'],start:s=>{s.v.k=0;s.set(0,'orange');s.show()},on:{shake:s=>{s.rotate();s.show();s.v.k++}},readout:s=>`<span>搖了 ${s.v.k} 下</span>`},
+  l2hw:{title:'功課目標效果',start:s=>{s.set(2,'hsl(200 100% 55%)');s.set(1,'hsl(200 100% 25%)');s.set(0,'hsl(200 100% 9%)');s.show()},loop:s=>{s.rotate();s.show();return 100}},
+  l3e1:{title:'範例 3-1',serial:true,buttons:['shake','A','B','AB'],
+    start:s=>{s.v.steps=0;s.v.goal=20;s.bar(0,20)},
+    on:{shake:s=>{s.v.steps++;s.bar(s.v.steps,s.v.goal);s.serial('steps',s.v.steps);if(s.v.steps>=s.v.goal)s.rainbow()},
+        A:s=>{s.v.steps=0;s.bar(0,s.v.goal);s.serial('steps',0);s.disp=''},
+        B:s=>{s.disp=String(s.v.steps)},
+        AB:s=>{s.v.goal+=10;s.disp=String(s.v.goal);s.bar(s.v.steps,s.v.goal);s.serial('goal',s.v.goal)}},
+    readout:s=>`<span>steps = ${s.v.steps}</span><span>goal = ${s.v.goal}</span>`},
+  l3hw:{title:'功課目標效果',serial:true,buttons:['shake','A'],
+    start:s=>{s.v.steps=0;s.v.goal=30;upd(s)},on:{shake:s=>{s.v.steps++;upd(s)},A:s=>{s.v.steps=0;upd(s)}},
+    readout:s=>`<span>steps = ${s.v.steps}</span><span>goal = ${s.v.goal}</span>`}
+};
+function upd(s){const{steps,goal}=s.v;if(steps>=goal)s.rainbow();else if(steps*2>=goal)s.showColor('yellow');else s.showColor('red');s.serial('steps',steps);}
+document.querySelectorAll('[data-sim]').forEach(el=>new Sim(el,S[el.dataset.sim]));
+
+/* ---------- receiver demo ---------- */
+(function(){
+  const tr=document.getElementById('dTrack');tr.innerHTML='<div></div>'.repeat(10);
+  const cells=[...tr.children],st=document.getElementById('dSteps'),gl=document.getElementById('dGoal'),msg=document.getElementById('dMsg'),log=document.getElementById('dLog');
+  let steps=0,goal=20;
+  function draw(){
+    st.textContent=steps;gl.textContent=goal;
+    const n=goal>0?Math.min(10,Math.floor(steps*10/goal)):0;
+    cells.forEach((c,i)=>{c.style.background=steps>=goal?`hsl(${i*36} 90% 55%)`:(i<n?'var(--accent)':'')});
+    msg.textContent=steps>=goal?'達標！巡田完成':steps===0?'還沒出發':`還差 ${goal-steps} 步`;
+  }
+  function send(k,v){log.textContent+=`${k}:${v}\n`;log.scrollTop=1e6;}
+  document.getElementById('dStep').onclick=()=>{steps++;send('steps',steps);draw()};
+  document.getElementById('dReset').onclick=()=>{steps=0;send('steps',0);draw()};
+  document.getElementById('dGoalUp').onclick=()=>{goal+=10;send('goal',goal);draw()};
+  draw();
+})();
+
+/* ---------- teacher mode ---------- */
+const tbtn=document.getElementById('tbtn');
+function setTeacher(on){
+  document.body.classList.toggle('teacher',on);
+  tbtn.textContent='教師模式：'+(on?'開':'關');tbtn.setAttribute('aria-pressed',on);
+  if(on)document.querySelectorAll('select.blank').forEach(s=>{s.value=s.dataset.ans;s.classList.remove('no');s.classList.add('ok')});
+  document.querySelectorAll('section.lesson').forEach(updateScore);
+}
+tbtn.addEventListener('click',()=>setTeacher(!document.body.classList.contains('teacher')));
+
+/* ---------- routing ---------- */
+const VIEWS=['lesson1','lesson2','lesson3','web'];
+function route(){
+  let h=location.hash.slice(1);
+  if(h==='teacher'){setTeacher(true);h='lesson1';}
+  if(!VIEWS.includes(h))h='lesson1';
+  VIEWS.forEach(v=>{document.getElementById('v-'+v).hidden=v!==h});
+  document.querySelectorAll('nav.tabs a').forEach(a=>{if(a.getAttribute('href')==='#'+h)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+}
+addEventListener('hashchange',()=>{route();scrollTo(0,0)});
+route();
+</script>
+
+</html>

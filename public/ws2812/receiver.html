@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>巡田步數接收頁</title>
+<style>
+:root{--bg:#f4f7f3;--surface:#fff;--fg:#1b241f;--muted:#5a6a61;--line:#d6dfd8;--accent:#1f7a4d;--soft:#e1f0e6;--warn:#b4511a;
+  --font:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;--mono:Consolas,"JetBrains Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#111613;--surface:#1a211d;--fg:#e3ebe6;--muted:#98a99f;--line:#2d3934;--accent:#5cc98f;--soft:#1c3327;--warn:#f0a070;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);line-height:1.6}
+.wrap{max-width:900px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:30px;margin:0 0 4px;font-weight:900}
+.sub{color:var(--muted);margin:0 0 20px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:22px}
+button{font:700 16px var(--font);border:0;border-radius:99px;padding:10px 20px;cursor:pointer;background:var(--accent);color:#fff}
+button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+button:disabled{opacity:.5;cursor:default}
+.status{font-size:15px;color:var(--muted)}
+.status b{color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px}
+.nums{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.big{font:900 88px/1 var(--mono);font-variant-numeric:tabular-nums}
+.goal{font-size:28px;color:var(--muted);font-weight:700}
+.track{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin:22px 0 10px}
+.track div{height:56px;border-radius:12px;background:var(--bg);border:2px solid var(--line);transition:background .25s,box-shadow .25s}
+.msg{font-size:22px;font-weight:900;min-height:1.6em}
+.msg.done{color:var(--warn)}
+details{margin-top:22px}
+summary{cursor:pointer;color:var(--muted);font-weight:700}
+pre{background:#000;color:#7dffb0;border-radius:10px;padding:10px 12px;height:160px;overflow:auto;font:13px var(--mono);margin:8px 0 0}
+.err{background:#fbede2;color:#8a3a10;border-radius:10px;padding:10px 14px;margin-bottom:16px}
+.help{font-size:14px;color:var(--muted);margin-top:18px}
+.help li{margin:2px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>巡田步數接收頁</h1>
+  <p class="sub"><a href="./" style="color:var(--accent)">← 回 WS2812 燈條課</a>　micro:bit 每走一步，就會傳來 <code>steps:數字</code>，這裡的跑道跟著往前。</p>
+
+  <div class="err" id="unsupported" hidden>這個瀏覽器不能讀 USB。請用電腦版 <b>Chrome</b> 或 <b>Edge</b> 打開這個檔案。下面的「示範模式」還是可以玩。</div>
+
+  <div class="bar">
+    <button id="connect" type="button">連接 micro:bit</button>
+    <button id="disconnect" type="button" class="ghost" disabled>中斷連線</button>
+    <span class="status" id="status">尚未連線</span>
+  </div>
+
+  <div class="card">
+    <div class="nums"><span class="big" id="steps">0</span><span class="goal">/ <span id="goal">20</span> 步</span></div>
+    <div class="track" id="track"></div>
+    <div class="msg" id="msg">等待出發</div>
+  </div>
+
+  <details>
+    <summary>示範模式（沒有 micro:bit 也能試）</summary>
+    <div class="bar" style="margin-top:10px">
+      <button type="button" class="ghost" id="demoStep">走一步</button>
+      <button type="button" class="ghost" id="demoReset">歸零</button>
+      <button type="button" class="ghost" id="demoGoal">目標 +10</button>
+    </div>
+  </details>
+
+  <details>
+    <summary>收到的原始資料</summary>
+    <pre id="log"></pre>
+  </details>
+
+  <ol class="help">
+    <li>micro:bit 程式裡要有「序列寫入數值 "steps" = steps」（目標用 "goal"）。</li>
+    <li>先關掉 MakeCode 分頁，避免連接埠被占用。</li>
+    <li>按「連接 micro:bit」，選擇名稱有 <b>mbed</b> 或 <b>micro:bit</b> 的裝置。</li>
+  </ol>
+</div>
+
+<script>
+let steps=0, goal=20, port=null, reader=null, keep=false;
+const $=id=>document.getElementById(id);
+const track=$('track'); track.innerHTML='<div></div>'.repeat(10);
+const cells=[...track.children];
+
+function draw(){
+  $('steps').textContent=steps; $('goal').textContent=goal;
+  const done=goal>0&&steps>=goal;
+  const n=goal>0?Math.min(10,Math.floor(steps*10/goal)):0;
+  cells.forEach((c,i)=>{
+    const col=done?`hsl(${i*36} 90% 55%)`:(i<n?'var(--accent)':'');
+    c.style.background=col; c.style.boxShadow=done?`0 0 14px hsl(${i*36} 90% 55%)`:'';
+  });
+  const m=$('msg'); m.classList.toggle('done',done);
+  m.textContent=done?'達標！巡田完成 🎉':steps===0?'等待出發':`再 ${goal-steps} 步就達標`;
+}
+function log(line){const l=$('log'); l.textContent+=line+'\n'; if(l.textContent.length>8000) l.textContent=l.textContent.slice(-6000); l.scrollTop=1e9;}
+function handle(line){
+  line=line.trim(); if(!line) return; log(line);
+  const m=line.match(/^([A-Za-z_]\w*)\s*:\s*(-?\d+(?:\.\d+)?)$/); if(!m) return;
+  const v=Math.round(Number(m[2]));
+  if(m[1]==='steps') steps=Math.max(0,v);
+  else if(m[1]==='goal') goal=Math.max(1,v);
+  draw();
+}
+
+async function connect(){
+  try{
+    port=await navigator.serial.requestPort();
+    await port.open({baudRate:115200});
+  }catch(e){ $('status').textContent=e.name==='NotFoundError'?'沒有選擇裝置':'連線失敗：'+e.message+'（連接埠可能被 MakeCode 占用）'; port=null; return; }
+  $('status').innerHTML='<b>已連線</b>，開始走路吧！';
+  $('connect').disabled=true; $('disconnect').disabled=false; keep=true;
+  const dec=new TextDecoderStream(); const closed=port.readable.pipeTo(dec.writable).catch(()=>{});
+  reader=dec.readable.getReader(); let buf='';
+  try{
+    while(keep){
+      const {value,done}=await reader.read(); if(done) break;
+      buf+=value; const parts=buf.split(/\r?\n/); buf=parts.pop(); parts.forEach(handle);
+    }
+  }catch(e){ $('status').textContent='連線中斷：'+e.message; }
+  try{reader.releaseLock()}catch(_){}
+  await closed; try{await port.close()}catch(_){}
+  port=null; $('connect').disabled=false; $('disconnect').disabled=true;
+  if(!keep) $('status').textContent='已中斷連線';
+}
+async function disconnect(){ keep=false; try{await reader.cancel()}catch(_){} }
+
+if(!('serial' in navigator)){ $('unsupported').hidden=false; $('connect').disabled=true; }
+$('connect').onclick=connect; $('disconnect').onclick=disconnect;
+$('demoStep').onclick=()=>handle('steps:'+(steps+1));
+$('demoReset').onclick=()=>handle('steps:0');
+$('demoGoal').onclick=()=>handle('goal:'+(goal+10));
+draw();
+</script>
+</body>
+</html>
