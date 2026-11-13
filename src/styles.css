@@ -312,3 +312,33 @@ header nav .nav-race{background:#fde8e4;color:#8f2a1f;font-weight:700}
 .race-choice button,.race-step{justify-content:center;gap:2px;line-height:1.35}
 .race-choice button small,.race-step small{display:block;margin:0}
 .race-main .race-btn:disabled{background:#d5ddd7;color:#4f6157;cursor:not-allowed;box-shadow:none;filter:none;opacity:1}
+
+/* ===== Claude：雙人競賽課程頁 race/lesson.html（2026-11-13） ===== */
+.lesson .lesson-sec{max-width:880px;margin:16px auto}
+.lesson .lesson-sec h2{margin-top:0}
+.lesson h3{font-size:19px;margin:16px 0 6px;color:var(--lake)}
+.lesson code{background:#eef5ec;border-radius:6px;padding:1px 6px;font-size:.95em}
+.lesson-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:880px;margin:10px auto}
+.lesson-card{display:flex;flex-direction:column;gap:2px;background:#fff;border-radius:16px;padding:14px 16px;border:3px solid var(--line);color:var(--race-ink);text-decoration:none;min-width:0}
+.lesson-card:hover{border-color:var(--lake);text-decoration:none}
+.lesson-card b{font-size:19px;color:var(--forest);overflow-wrap:anywhere}
+.lesson-card span{font-size:15px;color:var(--muted)}
+.lesson-map{columns:2;column-gap:28px}
+.lesson-where{background:#eef6fb;border-radius:10px;padding:6px 12px}
+.lesson-think{background:#fff8e8;border-radius:10px;padding:8px 12px;font-weight:700}
+.lesson-table{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.lesson-table table{border-collapse:collapse;width:100%;min-width:420px;font-size:16px;background:#fff}
+.lesson-table th,.lesson-table td{border:2px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+.lesson-table th{background:#f3f7f1}
+.lesson-table td:empty{min-width:90px}
+.lesson-predict{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.lesson-led-card{background:#f3f7f1;border-radius:12px;padding:8px;display:grid;justify-items:center;gap:6px;min-width:0}
+.lesson-led{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:#1b1b1b;padding:8px;border-radius:8px;width:100%;max-width:130px;box-sizing:border-box}
+.lesson .lesson-led button{all:unset;display:block;box-sizing:border-box;width:100%;aspect-ratio:1;border-radius:3px;background:#3a2a2a;cursor:pointer}
+.lesson .lesson-led button:focus-visible{outline:3px solid var(--sun)}
+.lesson .lesson-led button[aria-pressed="true"]{background:#ff3b30;box-shadow:0 0 6px #ff3b30}
+.lesson-tiers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.lesson-tiers article{background:#f8fbf6;border-radius:14px;padding:10px 14px;border:2px solid var(--line);min-width:0}
+.lesson-tiers h3{margin-top:4px}
+.race-lesson-link{display:inline-block;margin-top:8px}
+@media(max-width:760px){.lesson-cards,.lesson-tiers{grid-template-columns:1fr}.lesson-map{columns:1}.lesson-predict{grid-template-columns:repeat(2,minmax(0,1fr))}}
