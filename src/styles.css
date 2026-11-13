@@ -342,3 +342,11 @@ header nav .nav-race{background:#fde8e4;color:#8f2a1f;font-weight:700}
 .lesson-tiers h3{margin-top:4px}
 .race-lesson-link{display:inline-block;margin-top:8px}
 @media(max-width:760px){.lesson-cards,.lesson-tiers{grid-template-columns:1fr}.lesson-map{columns:1}.lesson-predict{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* ===== Claude：第 2 週 Bonus 關卡（2026-11-13） ===== */
+.bonus-card{margin-top:14px;border:3px dashed var(--sun);border-radius:16px;background:#fffaf0}
+.bonus-card a{display:flex;align-items:center;gap:14px;padding:14px 16px;color:inherit;text-decoration:none}
+.bonus-card a:hover{text-decoration:none;background:#fff3d6;border-radius:13px}
+.bonus-card .task-num{background:var(--sun);color:#4a3a00}
+.bonus-card small{display:block;color:var(--muted)}
+.bonus-unlock{display:inline-block;background:#fff3d6;border:2px solid var(--sun);border-radius:12px;padding:6px 12px;font-weight:700}
