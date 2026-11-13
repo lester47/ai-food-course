@@ -1,0 +1,26 @@
+# AI 食農大使｜雙人競賽房間服務
+# 使用 Cloudflare Workers Free 方案即可（SQLite 型 Durable Object 為免費方案支援的類型）。
+# 本服務不呼叫任何持久化儲存 API（不使用 ctx.storage、KV、D1）。
+name = "ai-food-race"
+main = "src/worker.js"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+[vars]
+# 允許連線的網頁來源（逗號分隔）
+ALLOWED_ORIGINS = "https://lester47.github.io"
+# 允許老師在自己電腦用 localhost 測試
+ALLOW_LOCALHOST = "true"
+CREATE_PER_MIN = "20"
+JOIN_PER_MIN = "60"
+
+[[durable_objects.bindings]]
+name = "RACE_ROOM"
+class_name = "RaceRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["RaceRoom"]
+
+[observability]
+enabled = false

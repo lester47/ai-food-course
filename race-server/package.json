@@ -1,0 +1,17 @@
+{
+  "name": "ai-food-race-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "deploy": "wrangler deploy",
+    "test": "cd .. && node --test tests/race.test.mjs tests/race-restore.test.mjs",
+    "test:e2e": "node test/e2e.mjs && node test/browser-e2e.cjs",
+    "check": "wrangler deploy --dry-run --outdir .wrangler/dry"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0",
+    "ws": "^8.23.0"
+  }
+}

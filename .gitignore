@@ -9,3 +9,8 @@ teacher-src/
 
 # 美工原始大圖與備份（只留在本機，不上傳）
 design-src/
+
+# 雙人競賽伺服器（Cloudflare）本機檔
+race-server/node_modules/
+race-server/.wrangler/
+race-server/.dev.vars
