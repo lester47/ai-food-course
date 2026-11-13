@@ -271,3 +271,16 @@ test('第 3 週頁面有雙人競賽課程入口', async () => {
   const app = await readFile('src/app.js', 'utf8');
   assert.match(app, /w\.id==='w3'\?`<div class="panel game-callout race-callout">[^`]*href="\.\/race\/lesson\.html"/);
 });
+
+test('第 2 週含一板雙隊、第 3 週是雙人競賽，兩週皆為完整 PBL 格式', async () => {
+  const { tasks } = await import('../src/data/tasks.js');
+  const { weeks } = await import('../src/data/weeks.js');
+  const w2 = tasks.filter(t => t.weekId === 'w2'), w3 = tasks.filter(t => t.weekId === 'w3');
+  assert.equal(w2.length, 6); assert.equal(w3.length, 6);
+  for (const t of [...w2, ...w3]) { assert.ok(t.story && t.predict && t.tiers.basic.length && t.tiers.plus.length && t.tiers.challenge.length, t.id); assert.ok(!t.outline, t.id); }
+  assert.match(JSON.stringify(w2), /R,/); assert.match(JSON.stringify(w2), /RESET/);
+  assert.ok(w3.every(t => t.practiceUrl && t.practiceUrl.startsWith('./race/')));
+  assert.match(weeks.find(w => w.id === 'w3').title, /雙人競賽/);
+  assert.doesNotMatch(JSON.stringify([...w2, ...w3]), /STEP:/); // 統一用逗號
+  assert.doesNotMatch(JSON.stringify([...w2, ...w3]), /onGesture\(|serial\.writeLine|plotBarGraph\(/); // 學生頁不放程式碼
+});

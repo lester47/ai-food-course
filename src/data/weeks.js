@@ -1,7 +1,7 @@
 export const weeks = [
  {id:'w1',title:'鄉鎮走訪計步器：從搖一搖到紅綠雙隊',short:'搖一搖，走向第一個鄉鎮',tag:'程式啟蒙',icon:'▦',description:'用事件、變數和條件，做出搖一搖就計步、走滿 10 步抵達鄉鎮的計步器，打造領地戰的第一個零件。',equipment:'電腦、網路、MakeCode 瀏覽器模擬器；實體 micro:bit 選用（可綁在手腕上踏步）。',prior:'不需要程式經驗。',submission:'MakeCode 分享連結（或積木與模擬器截圖），加上大使日誌三題。',output:'鄉鎮走訪計步器'},
- {id:'w2',title:'micro:bit USB 直接控制網頁',short:'把步數送進網頁',tag:'感測連線',icon:'↗',description:'用一條 USB 線，讓你的每一步出現在網頁上。',equipment:'micro:bit、可傳輸資料的 USB 線、Chrome／Edge 桌機與 HTTPS 網頁。',prior:'能建立步數變數與按鍵事件。',submission:'USB 連線與步數畫面的截圖或影片連結，加上資料傳送原理簡述。',output:'USB 網頁進度條'},
- {id:'w3',title:'紅綠隊即時競跑網頁',short:'一起跑，讓雙隊競賽開始',tag:'資料分流',icon:'⚑',description:'一塊板子、兩支隊伍，學會讀懂資料中的隊伍標籤。',equipment:'一塊 micro:bit、資料 USB 線、Chrome／Edge 桌機。',prior:'完成 STEP 逐行資料傳送。',submission:'雙隊競跑作品網址或測試截圖／影片，以及 R、G 訊息格式說明。',output:'雙隊競跑網頁'},
+ {id:'w2',title:'一塊板子兩支隊伍：USB 資料進網頁',short:'把步數送進網頁，紅綠雙隊一起跑',tag:'感測連線',icon:'↗',description:'用序列和字串組合把步數送進網頁，再用 R、G 標籤分出紅綠兩隊，做出雙隊進度條。',equipment:'micro:bit、可傳輸資料的 USB 線、Chrome／Edge 桌機與 HTTPS 網頁；沒有板子可用模擬器與示範模式。',prior:'完成第一週：步數變數、搖晃事件、一機紅綠雙隊。',submission:'雙隊進度條的截圖或影片、STEP 與 R、G 格式說明，以及測試紀錄。',output:'一板雙隊競跑網頁'},
+ {id:'w3',title:'雙人競賽實驗室：兩台電腦即時對戰',short:'兩台電腦、兩塊板子，連線對決',tag:'連線對戰',icon:'⚑',description:'複習長條圖，寫出競賽版程式，用房號配對紅綠隊，兩台電腦即時比賽，並處理斷線與公平規則。',equipment:'每人一台 Chrome／Edge 桌機與一塊 micro:bit；沒有板子可用「模擬按鈕」連線測試。',prior:'完成第二週：序列寫入、字串組合、Web Serial 連線。',submission:'比賽結果截圖、2 條公平規則與至少 3 項測試紀錄。',output:'雙人連線對戰'},
  {id:'w4',title:'南投13鄉鎮食農互動地圖',short:'用程式探索南投的好味道',tag:'在地探索',icon:'❋',description:'從鄉鎮資料卡出發，連結農產、土地與資訊查核。',equipment:'電腦、網路、教師核准的食農資料與真實行政界線資料。',prior:'理解按鈕事件與介面更新。',submission:'互動頁網址、至少一筆已核對的食農資料與參考來源。',output:'食農互動資料卡'},
  {id:'w5',title:'AI 食農大使：領地爭霸戰',short:'讓學過的能力一起發揮',tag:'整合創作',icon:'✳',description:'結合競跑與食農知識，完成屬於小組的期末作品。',equipment:'電腦與網路；USB 設備選用，保留手動示範模式。',prior:'理解雙隊進度與鄉鎮選取。',submission:'作品網址、截圖或影片連結、小組心得與測試紀錄。',output:'食農領地挑戰'}
 ].map((w,i)=>({...w,number:i+1,durationMinutes:180}));

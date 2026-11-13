@@ -8,7 +8,7 @@ export const firstLessons = {
 };
 export function defaultIdea(t){return firstLessons[t.id]?.idea||`我想完成「${t.title}」。希望做到：${t.objectives.join('；')}。`;}
 export function createPrompt(t,w,idea=defaultIdea(t)){
- const context=w.id==='w1'?'我使用繁體中文 MakeCode 與瀏覽器模擬器；本週只做模擬器練習。':w.id==='w2'||w.id==='w3'?'我使用繁體中文 MakeCode 與老師提供的網頁；硬體以一塊 micro:bit 連接 Chrome／Edge 桌機示範頁。序列格式沿用 STEP,數字、R,數字、G,數字或 RESET，數字是累積值。': '我使用老師提供的食農互動網頁及教材。涉及積木的部分用繁體中文 MakeCode；涉及網頁的部分，請先說明要修改哪個檔案。';
+ const context=w.id==='w1'?'我使用繁體中文 MakeCode 與瀏覽器模擬器；本週只做模擬器練習。':w.id==='w2'?'我使用繁體中文 MakeCode 與老師提供的網頁；硬體以一塊 micro:bit 連接 Chrome／Edge 桌機示範頁。序列格式沿用 STEP,數字、R,數字、G,數字或 RESET，數字是累積值。':w.id==='w3'?'我使用繁體中文 MakeCode 與網站的「雙人競賽」頁；兩人各用一台 Chrome／Edge 電腦與一塊 micro:bit，板子送出 STEP,步數 與 RESET，勝負由競賽伺服器判定。': '我使用老師提供的食農互動網頁及教材。涉及積木的部分用繁體中文 MakeCode；涉及網頁的部分，請先說明要修改哪個檔案。';
  const boundary=w.id==='w4'||w.id==='w5'?'農產資料必須留下可核對來源；沒有真實行政界線時，明確使用鄉鎮卡片練習。不要捏造來源、地圖或已完成的外部服務。':'不要自行加入本關以外的新功能，也不要假裝硬體已連接或測試通過。';
  return `我是國小四～六年級的學生，正在做第 ${w.number} 週「${t.title}」。\n\n【我使用的工具】\n${context}\n\n【我的功能與想法】\n${idea.trim()||defaultIdea(t)}\n\n【這次只學一個新概念】\n${t.concept}\n\n【請你這樣協助我】\n1. 先用一句話確認你理解的功能；不清楚的地方先問我。\n2. 用繁體中文，一次只教一個步驟，不要一開始給完整程式。\n3. 積木操作要說明工具箱分類與用途；不確定正式名稱時請說明，不要捏造積木。\n4. 每一步告訴我怎麼測試、應該看到什麼，等我回報結果再繼續。\n5. 如果失敗，根據我的實際結果提供一個除錯方向，先不要重寫全部。\n6. ${boundary}\n\n【本關原始驗收（修改功能前先對照）】\n${t.testing.join('\n')}\n\n若我的想法更改了原本的按鍵或顯示結果，請先指出與原始驗收的差異，和我確認後另列修改版的測試；不要給我互相矛盾的要求。\n\n請先教第一個步驟。`;
 }
