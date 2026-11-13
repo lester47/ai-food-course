@@ -6,9 +6,9 @@
 <main id="race-main" class="race-main lesson" tabindex="-1">
 
 <section class="race-hero">
-  <p class="race-eyebrow">第 3 週延伸｜雙人競賽前的課</p>
+  <p class="race-eyebrow">第 3 週｜複習第 2 週＋長條圖</p>
   <h1>📡 micro:bit 會說話</h1>
-  <p>學會 3 個新積木，就能做出雙人競賽用的搖晃計步器！</p>
+  <p>用 3 個積木做出雙人競賽用的搖晃計步器！第 2 週學過的序列和字串組合在這裡複習，長條圖是新挑戰。</p>
 </section>
 
 <div class="lesson-cards">
@@ -36,7 +36,7 @@
   <ul>
     <li>第 1 輪：只寫數字，例如 <code>3</code>。</li>
     <li>第 2 輪：兩排的紙條混在一起交給同一台電腦。電腦分得出是哪一隊、是什麼數字嗎？</li>
-    <li>第 3 輪：改寫 <code>STEP:3</code>。這次呢？</li>
+    <li>第 3 輪：改寫 <code>STEP,3</code>。這次呢？</li>
   </ul>
   <p class="lesson-think">🤔 想一想：為什麼一張紙條只能寫一行？</p>
 </section>
@@ -63,27 +63,27 @@
 
 <section class="race-panel lesson-sec" id="b2">
   <h2>② 字串組合</h2>
-  <p>「字串組合」把兩段文字黏成一段：前面放固定的標籤 <code>STEP:</code>，後面放會變的「步數」，就會送出 <code>STEP:1</code>、<code>STEP:2</code>……</p>
+  <p>「字串組合」把兩段文字黏成一段：前面放固定的標籤 <code>STEP,</code>，後面放會變的「步數」，就會送出 <code>STEP,1</code>、<code>STEP,2</code>……</p>
   <p class="lesson-where">📍 在哪裡：<b>進階 → 文字 → 字串組合</b>（按 ⊕ 可以多接一段）</p>
   <p class="lesson-think">📦 就像寄包裹：箱子貼「綠豆 3 包」。「綠豆」是固定標籤，「3」每次不一樣，黏在一起收件人才看得懂。</p>
   <h3>練習 3：會報數的計步器</h3>
   <ol>
     <li>建立變數「步數」。</li>
     <li>當姿勢 晃動 發生：步數 改變 1。</li>
-    <li>接著：序列 寫入一行文字，裡面放「字串組合」，第一格 <code>STEP:</code>，第二格從「變數」拖入圓角的「步數」。</li>
-    <li>按模擬器的 SHAKE 搖 5 下，顯示資料應該出現 STEP:1 到 STEP:5。</li>
+    <li>接著：序列 寫入一行文字，裡面放「字串組合」，第一格 <code>STEP,</code>，第二格從「變數」拖入圓角的「步數」。</li>
+    <li>按模擬器的 SHAKE 搖 5 下，顯示資料應該出現 STEP,1 到 STEP,5。</li>
   </ol>
   <h3>🕵️ 除錯偵探：一個字都不能錯</h3>
-  <p>競賽網頁只認得 <code>STEP:數字</code>。下面每個案件，顯示資料看到的都不太一樣。哪裡錯了？網頁收不收？寫在學習單上，再自己改程式驗證。</p>
+  <p>競賽網頁只認得 <code>STEP,數字</code>。下面每個案件，顯示資料看到的都不太一樣。哪裡錯了？網頁收不收？寫在學習單上，再自己改程式驗證。</p>
   <div class="lesson-table"><table>
     <thead><tr><th>案件</th><th>顯示資料看到</th><th>哪裡錯？</th><th>網頁收不收？</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td><code>STEP:步數</code></td><td></td><td></td></tr>
+      <tr><td>1</td><td><code>STEP,步數</code></td><td></td><td></td></tr>
       <tr><td>2</td><td><code>STEP5</code></td><td></td><td></td></tr>
-      <tr><td>3</td><td><code>5STEP:</code></td><td></td><td></td></tr>
+      <tr><td>3</td><td><code>5STEP,</code></td><td></td><td></td></tr>
       <tr><td>4</td><td><code>5</code></td><td></td><td></td></tr>
-      <tr><td>5</td><td><code>step:5</code></td><td></td><td></td></tr>
-      <tr><td>6</td><td><code>STEP:5</code></td><td></td><td></td></tr>
+      <tr><td>5</td><td><code>step,5</code></td><td></td><td></td></tr>
+      <tr><td>6</td><td><code>STEP,5</code></td><td></td><td></td></tr>
     </tbody>
   </table></div>
 </section>
@@ -107,13 +107,13 @@
     <li>當按鈕 A 被按下：步數 設為 0；寫入一行文字 <code>RESET</code>；顯示文字 <code>R</code>（綠隊用 <code>G</code>）。</li>
     <li>當啟動時：顯示文字 <code>R</code> 或 <code>G</code>，一看就知道是哪一隊的板子。</li>
   </ol>
-  <p>✅ 自我檢查：搖 3 下 → 顯示資料有 STEP:1、STEP:2、STEP:3，LED 最下面慢慢變亮；按 A → 出現 RESET。</p>
+  <p>✅ 自我檢查：搖 3 下 → 顯示資料有 STEP,1、STEP,2、STEP,3，LED 最下面慢慢變亮；按 A → 出現 RESET。</p>
   <div class="lesson-table"><table>
     <thead><tr><th>你們的設備</th><th>怎麼比</th></tr></thead>
     <tbody>
       <tr><td>有 micro:bit，每人一台電腦</td><td>下載到板子，<b>關掉顯示資料視窗</b>，到雙人競賽頁：紅隊建立房間、綠隊輸入房號、各自連接 micro:bit。</td></tr>
       <tr><td>沒有 micro:bit，每人一台電腦</td><td>雙人競賽頁兩人都選「模擬按鈕」比賽；比完交換檢查對方的程式。</td></tr>
-      <tr><td>兩人共用一台電腦</td><td>在 MakeCode 模擬器比：一人點 SHAKE，一人當裁判盯著顯示資料，看到 STEP:20、LED 全亮就算完成，計時比快。</td></tr>
+      <tr><td>兩人共用一台電腦</td><td>在 MakeCode 模擬器比：一人點 SHAKE，一人當裁判盯著顯示資料，看到 STEP,20、LED 全亮就算完成，計時比快。</td></tr>
     </tbody>
   </table></div>
   <p><a class="race-btn red" href="./">🏁 前往雙人競賽</a></p>
@@ -123,7 +123,7 @@
   <h2>🎟️ 出口票（3 題全對才能出關）</h2>
   <ol>
     <li>「序列 寫入一行文字」送出的字，要到哪裡才看得到？</li>
-    <li>步數是 7，字串組合 <code>STEP:</code> 步數，會送出什麼？</li>
+    <li>步數是 7，字串組合 <code>STEP,</code> 步數，會送出什麼？</li>
     <li>plot bar graph of 步數 up to 20，步數是 10 時，LED 大約亮幾成？</li>
   </ol>
 </section>
