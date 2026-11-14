@@ -124,7 +124,7 @@ export class LocalRoom {
     this.onState(this.engine.view(now));
     clearTimeout(this.timer);
     const d = this.engine.nextDeadline();
-    if (d != null) this.timer = setTimeout(() => { if (this.engine.tick(Date.now())) this.emit(); }, Math.max(0, d - now) + 10);
+    if (d != null) this.timer = setTimeout(() => { this.engine.tick(Date.now()); this.emit(); }, Math.max(0, d - now) + 10);
   }
   start() { this.count = { red: 0, green: 0 }; this.engine.handle('red', { type: 'start_request' }, Date.now()); this.emit(); }
   step(team) {
@@ -133,7 +133,7 @@ export class LocalRoom {
     if (s.phase !== 'racing') return;
     this.count[team] = Math.max(this.count[team], s.players[team].score) + 1;
     const r = this.engine.handle(team, { type: 'step', round: s.round, sequence: ++this.seq[team], count: this.count[team] }, now);
-    if (r.changed) this.emit();
+    this.emit(); // 就算這一步先欠著，也要排好稍後補記的時間
   }
   rematch() { for (const t of TEAMS) this.engine.handle(t, { type: 'rematch_request' }, Date.now()); this.emit(); }
   close() { clearTimeout(this.timer); }
