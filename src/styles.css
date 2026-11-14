@@ -358,3 +358,88 @@ header nav .nav-race{background:#fde8e4;color:#8f2a1f;font-weight:700}
 .material-pair pre{margin:0;max-height:none;overflow:auto}
 @media(max-width:860px){.material-pair{grid-template-columns:1fr}}
 @media print{.material-pair{grid-template-columns:1fr 1fr}.material-pair .mat-blocks{overflow:visible}}
+
+/* ===== Claude：第 3 週課程頁「程式拆解」與一步亮一顆（2026-11-14） ===== */
+.lesson{--pg-event:#c428c4;--pg-var:#d6143c;--pg-serial:#0b2350;--pg-logic:#00999b;--pg-basic:#1e88e5;--pg-led:#5c2d91;--pg-text:#b07a12;--pg-code:#0f1a26;--pg-code-ink:#d8f3e6;--pg-eol:#ffd166}
+.lesson-cards.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.pg-formula{display:grid;gap:2px;background:#f3f7f1;border-radius:10px;padding:8px 12px;margin:8px 0}
+.pg-formula span{color:var(--muted);font-size:15px}
+.pg-figure{margin:10px 0;background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
+.pg-figure img{display:block;width:100%;min-width:620px;height:auto}
+.pg-chip{display:inline-block;color:#fff;font-size:13px;font-weight:700;padding:1px 10px;border-radius:999px;white-space:nowrap;line-height:1.7}
+.pg-chip.event{background:var(--pg-event)}.pg-chip.var{background:var(--pg-var)}.pg-chip.serial{background:var(--pg-serial)}.pg-chip.logic{background:var(--pg-logic)}.pg-chip.basic{background:var(--pg-basic)}.pg-chip.led,.pg-chip.math{background:var(--pg-led)}.pg-chip.text{background:var(--pg-text)}
+.pg-events{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:10px 0}
+.pg-event{background:#fff;border:2px solid var(--line);border-top:6px solid var(--pg-event);border-radius:12px;padding:12px 14px;display:grid;gap:4px;align-content:start;min-width:0}
+.pg-event>b{font-size:18px}
+.pg-table{min-width:640px}
+.pg-table tr.pg-group td{background:#f3f7f1;font-weight:700}
+.pg-flow{background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0}
+.pg-step{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;position:relative;padding-bottom:14px}
+.pg-step:last-child{padding-bottom:0}
+.pg-step::before{content:"";position:absolute;left:18px;top:38px;bottom:0;width:2px;background:var(--line)}
+.pg-step:last-child::before{display:none}
+.pg-step>div{display:grid;gap:2px;padding-top:5px;min-width:0}
+.pg-step small{color:var(--muted);font-size:15px}
+.pg-num{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700}
+.pg-num.q{width:30px;height:30px;border-radius:7px;transform:rotate(45deg);margin:4px}
+.pg-num.q i{transform:rotate(-45deg);font-style:normal}
+.pg-branch{display:flex;flex-wrap:wrap;gap:6px}
+.pg-branch span{font-size:14px;border:1px solid var(--line);border-radius:8px;padding:1px 10px;background:#f3f7f1}
+.pg-sim{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:start;background:#fff;border:2px solid var(--line);border-radius:16px;padding:16px;margin:10px 0}
+.pg-board{background:#1d1f24;border-radius:18px;padding:16px;display:grid;gap:12px;justify-items:center;width:240px}
+.pg-board-name{color:#c9cbd1;font-size:13px;font-family:ui-monospace,Consolas,monospace}
+.pg-board-row{display:flex;align-items:center;gap:12px}
+.lesson .pg-btn-a,.pg-btn-b{all:unset;box-sizing:border-box;width:40px;height:40px;border-radius:50%;border:3px solid #555;background:#2b2d33;color:#ddd;font-weight:700;display:grid;place-items:center;font-size:15px}
+.lesson .pg-btn-a{cursor:pointer}
+.lesson .pg-btn-a:hover{background:#3a3d45}
+.lesson .pg-btn-a:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.pg-btn-b{opacity:.45}
+.pg-matrix{display:grid;grid-template-columns:repeat(5,16px);gap:8px}
+.pg-matrix i{width:16px;height:16px;border-radius:3px;background:#3a1a1a;transition:background .12s,box-shadow .12s}
+.pg-matrix i.on{background:#ff2a1f;box-shadow:0 0 9px 2px #ff2a1fa6}
+.pg-matrix i.new{animation:pg-pop .35s ease-out}
+@keyframes pg-pop{from{transform:scale(1.5)}to{transform:scale(1)}}
+.pg-var{color:#fff;font-size:15px;display:flex;gap:8px;align-items:center}
+.pg-var b{background:var(--pg-var);padding:0 12px;border-radius:999px;min-width:3ch;text-align:center}
+.pg-side{display:grid;gap:12px;min-width:0}
+.pg-actions{display:flex;flex-wrap:wrap;gap:8px}
+.pg-panel{border:2px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+.pg-panel-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:14px;font-weight:700;color:var(--muted);background:#f3f7f1;padding:6px 12px}
+.pg-trace{list-style:none;margin:0;padding:8px 12px;display:grid;gap:5px;font-size:15px;min-height:110px}
+.pg-trace li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:baseline;margin:0}
+.pg-trace li.pg-skip{color:var(--muted)}
+.pg-cable{background:var(--pg-code);padding:10px 12px;min-height:48px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.pg-cable .ch{font-family:ui-monospace,Consolas,monospace;font-size:15px;color:var(--pg-code-ink);background:#ffffff14;border:1px solid #ffffff2e;border-radius:4px;min-width:24px;padding:0 5px;text-align:center;opacity:0;animation:pg-travel .25s ease-out forwards}
+.pg-cable .ch.ctl{color:var(--pg-eol);border-color:#ffd16680}
+.pg-cable .hint,.pg-monitor .empty{color:#8fa3b8;font-size:14px}
+@keyframes pg-travel{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+.pg-monitor{background:var(--pg-code);color:var(--pg-code-ink);font-family:ui-monospace,Consolas,monospace;font-size:15px;padding:8px 12px;height:160px;overflow-y:auto;display:grid;align-content:start;gap:1px}
+.pg-monitor .ln{white-space:pre}
+.pg-monitor .eol{color:var(--pg-eol)}
+.pg-monitor .ln.reset{color:#ffb4a8}
+.pg-serial{background:var(--pg-serial);color:#fff;border-radius:14px;padding:16px 18px;display:grid;gap:10px;margin:10px 0}
+.pg-serial p{color:#dbe4f3}
+.pg-serial code{background:#ffffff1f;color:#fff}
+.pg-pipe{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center}
+.pg-pipe span{background:#ffffff1a;border:1px solid #ffffff40;border-radius:10px;padding:8px;text-align:center;font-size:15px}
+.pg-pipe b{display:block}
+.pg-pipe i{font-style:normal;color:var(--pg-eol);font-size:20px;text-align:center}
+.pg-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:10px 0}
+.pg-card{background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:6px;align-content:start;min-width:0}
+.pg-card>b{font-size:17px}
+.pg-card code{white-space:normal;overflow-wrap:anywhere}
+.pg-anatomy{display:flex;flex-wrap:wrap;gap:8px}
+.pg-anatomy span{display:grid;gap:2px;justify-items:center;text-align:center}
+.pg-anatomy em{font-style:normal;font-family:ui-monospace,Consolas,monospace;font-size:19px;font-weight:700;color:#fff;padding:3px 12px;border-radius:8px}
+.pg-anatomy em.p1{background:var(--pg-text)}.pg-anatomy em.p2{background:var(--pg-var)}.pg-anatomy em.p3{background:var(--pg-serial)}
+.pg-anatomy small{font-size:13px;color:var(--muted);max-width:10em;line-height:1.4}
+.pg-coord{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:start;margin:10px 0}
+.pg-grid20{display:grid;grid-template-columns:26px repeat(5,42px);gap:5px;font-family:ui-monospace,Consolas,monospace}
+.pg-grid20 .h{font-size:12px;color:var(--muted);display:grid;place-items:center}
+.pg-grid20 .c{height:42px;border-radius:8px;display:grid;place-items:center;font-weight:700;background:#f3f7f1;border:1px solid var(--line)}
+.pg-grid20 .c.used{background:#e2f4e8;color:var(--green)}
+.pg-grid20 .c.spare{color:var(--muted);font-weight:400;font-size:12px}
+.pg details{border-top:1px solid var(--line);padding:10px 0}
+@media(max-width:760px){.lesson-cards.four{grid-template-columns:repeat(2,minmax(0,1fr))}.pg-events,.pg-cards{grid-template-columns:1fr}.pg-sim,.pg-coord{grid-template-columns:1fr}.pg-board{justify-self:center}.pg-pipe{grid-template-columns:1fr}.pg-pipe i{transform:rotate(90deg)}}
+@media(max-width:420px){.pg-grid20{grid-template-columns:22px repeat(5,minmax(0,1fr))}.pg-board{width:100%;max-width:240px}}
+@media(prefers-reduced-motion:reduce){.pg-cable .ch,.pg-matrix i.new{animation:none;opacity:1}.pg-matrix i{transition:none}}

@@ -1,20 +1,21 @@
 <!doctype html>
-<html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#185c40"><meta name="description" content="雙人競賽前的 90 分鐘課程：序列寫入一行文字、字串組合、長條圖。"><style id="boot-hide">html{background:#f7fbf4}body{opacity:0}</style><title>micro:bit 會說話｜AI 食農大使</title></head>
+<html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#185c40"><meta name="description" content="雙人競賽前的 90 分鐘課程：序列寫入一行文字、字串組合、一步亮一顆燈，以及完整程式拆解。"><style id="boot-hide">html{background:#f7fbf4}body{opacity:0}</style><title>micro:bit 會說話｜AI 食農大使</title></head>
 <body class="race-page">
 <a class="skip" href="#race-main">跳至主要內容</a>
 <header><a class="brand" href="../#/">✳ <span>AI 食農大使<small>讓程式，連結土地</small></span></a><nav aria-label="主要導覽"><a href="../#/weeks">五週課程</a><a href="../#/practice/led">互動實驗室</a><a class="nav-race" href="./">🏁 雙人競賽</a><a href="../#/gallery">作品展示</a><a href="../#/help">操作說明</a><a class="nav-submit" href="../#/submit">📮 繳交作業</a></nav></header>
 <main id="race-main" class="race-main lesson" tabindex="-1">
 
 <section class="race-hero">
-  <p class="race-eyebrow">第 3 週｜複習第 2 週＋長條圖</p>
+  <p class="race-eyebrow">第 3 週｜複習第 2 週＋LED 一步亮一顆</p>
   <h1>📡 micro:bit 會說話</h1>
-  <p>用 3 個積木做出雙人競賽用的搖晃計步器！第 2 週學過的序列和字串組合在這裡複習，長條圖是新挑戰。</p>
+  <p>用 3 個積木做出雙人競賽用的搖晃計步器！第 2 週學過的序列和字串組合在這裡複習，「一步亮一顆燈」是新挑戰。最後還有完整的程式拆解和模擬器。</p>
 </section>
 
-<div class="lesson-cards">
+<div class="lesson-cards four">
   <a class="lesson-card" href="#b1"><b>① 序列 寫入一行文字</b><span>把一行字送給電腦</span></a>
   <a class="lesson-card" href="#b2"><b>② 字串組合</b><span>把標籤和數字黏在一起</span></a>
-  <a class="lesson-card" href="#b3"><b>③ plot bar graph</b><span>LED 變成進度條</span></a>
+  <a class="lesson-card" href="#b3"><b>③ 點亮 x, y</b><span>搖一下亮一顆燈</span></a>
+  <a class="lesson-card" href="#explain"><b>🔍 程式拆解</b><span>每塊積木在做什麼</span></a>
 </div>
 
 <section class="race-panel lesson-sec">
@@ -23,8 +24,8 @@
     <li><b>暖身</b>：人體序列埠（10 分）</li>
     <li><b>積木一</b>：序列 寫入一行文字（20 分）</li>
     <li><b>積木二</b>：字串組合＋除錯偵探（20 分）</li>
-    <li><b>積木三</b>：長條圖，先預測再觀察（18 分）</li>
-    <li><b>整合遊戲</b>：搖搖樂對決（14 分）</li>
+    <li><b>積木三</b>：點亮 x, y，先預測再觀察（18 分）</li>
+    <li><b>整合遊戲</b>：拼出競賽版程式＋看懂程式拆解（14 分）</li>
     <li><b>出口票</b>（8 分）</li>
   </ol>
   <p class="race-small">沒有 micro:bit 也沒關係：MakeCode 的模擬器有 <b>SHAKE</b> 按鈕可以搖，也有「顯示資料 模擬器」可以看訊息。</p>
@@ -89,25 +90,30 @@
 </section>
 
 <section class="race-panel lesson-sec" id="b3">
-  <h2>③ plot bar graph 長條圖</h2>
-  <p>把 25 顆 LED 當成進度條：數字越接近「up to」就亮越多，從最下面一排往上長，到了就全亮。</p>
-  <p class="lesson-where">📍 在哪裡：<b>LED</b>（找不到就按「更多」）<br>🔤 讀法：<b>plot bar graph of</b>＝畫長條圖，數值是；<b>up to</b>＝滿格是</p>
+  <h2>③ 點亮 x, y：搖一下亮一顆燈</h2>
+  <p>比賽的進度要一眼就看得出來：每搖一下，LED 就多亮一顆，由左到右、由上到下，20 步剛好亮滿上面四排（每排 5 顆）。最下面一排不用。</p>
+  <p class="lesson-where">📍 在哪裡：<b>LED → 點亮 x 0 y 0</b>；算位置要用 <b>數學 → remainder of（餘數）</b> 和 <b>數學 → integer /（整數除法）</b><br>🔤 讀法：<b>x</b>＝左右第幾行，<b>y</b>＝上下第幾列，<b>都從 0 開始數</b>。</p>
+  <div class="pg-formula"><b>x ＝（步數 − 1）除以 5 的餘數</b><span>這一排的第幾顆：0、1、2、3、4 一直輪流。</span></div>
+  <div class="pg-formula"><b>y ＝（步數 − 1）整數除以 5</b><span>第幾排：前 5 步是 0，接下來 5 步是 1……</span></div>
+  <div class="pg-formula"><b>例：第 13 步 → 13 − 1 ＝ 12，12 ÷ 5 ＝ 2 餘 2 → x ＝ 2，y ＝ 2</b><span>第三排的正中間。</span></div>
   <h3>練習 4：先預測再觀察</h3>
-  <p>拼一個測試程式：<b>按 A</b>：步數 改變 5，再 plot bar graph of 步數 up to 20。<b>按 B</b>：步數 設為 0，再 plot bar graph of 步數 up to 20。</p>
-  <p>每按一次 A 之前，先在下面點格子畫出你的預測，再按模擬器對照。猜錯沒關係，找出為什麼不一樣才是重點！</p>
+  <p>拼一個測試程式：<b>按 A</b>：步數 改變 1，再點亮 x ＝（步數 − 1）除以 5 的餘數、y ＝（步數 − 1）整數除以 5。<b>按 B</b>：步數 設為 0，再清空畫面。</p>
+  <p>下面每一格代表「按到第幾下的時候」。先點出你覺得<b>總共會亮哪幾顆燈</b>，再按模擬器對照。猜錯沒關係，找出為什麼不一樣才是重點！</p>
   <div class="lesson-predict" id="predict"></div>
-  <p class="lesson-think">🔁 變化挑戰：把 up to 20 改成 up to 10，再按兩次 A（步數 10）。為什麼這次全亮？比賽是先到 20 步獲勝，up to 要填多少？</p>
+  <p class="lesson-think">🔁 變化挑戰：如果忘了「減 1」，直接用步數去算，第 1 步會亮在哪裡？第 5 步呢？為什麼要先減 1？</p>
 </section>
 
 <section class="race-panel lesson-sec">
   <h2>🏁 整合遊戲：搖搖樂對決</h2>
   <p>把三個積木合起來，就是雙人競賽的程式！在練習 3 的程式補上：</p>
   <ol>
-    <li>搖晃事件最後：plot bar graph of 步數 up to 20。</li>
+    <li>搖晃事件裡，寫入一行之後：<b>如果 步數 ＝ 1 那麼 清空畫面</b>（把隊伍字母擦掉）。</li>
+    <li>再接：<b>如果 步數 ≤ 20 那麼 點亮</b> x ＝（步數 − 1）除以 5 的餘數、y ＝（步數 − 1）整數除以 5。</li>
     <li>當按鈕 A 被按下：步數 設為 0；寫入一行文字 <code>RESET</code>；顯示文字 <code>R</code>（綠隊用 <code>G</code>）。</li>
     <li>當啟動時：顯示文字 <code>R</code> 或 <code>G</code>，一看就知道是哪一隊的板子。</li>
   </ol>
-  <p>✅ 自我檢查：搖 3 下 → 顯示資料有 STEP,1、STEP,2、STEP,3，LED 最下面慢慢變亮；按 A → 出現 RESET。</p>
+  <p>✅ 自我檢查：搖 3 下 → 顯示資料有 STEP,1、STEP,2、STEP,3，LED 第一排從左邊亮了 3 顆；按 A → 出現 RESET，畫面變回隊伍字母。</p>
+  <p>🔍 拼完之後，到下面的「<a href="#explain">程式拆解</a>」對照每一塊積木，並用模擬器看看搖一下時到底發生了什麼事。比賽前先按 A 歸零，板子的燈數才會和網頁上的步數一樣。</p>
   <div class="lesson-table"><table>
     <thead><tr><th>你們的設備</th><th>怎麼比</th></tr></thead>
     <tbody>
@@ -119,12 +125,140 @@
   <p><a class="race-btn red" href="./">🏁 前往雙人競賽</a></p>
 </section>
 
+<section class="race-panel lesson-sec pg" id="explain">
+  <h2>🔍 程式拆解：每一塊積木在做什麼</h2>
+  <p>這就是雙人競賽用的完整程式（綠隊版）。紅隊版只有兩個地方不同：顯示的字母改成 <code>R</code>。</p>
+  <figure class="pg-figure">
+    <img src="../images/race-shake-blocks.webp" width="2400" height="806" loading="lazy" alt="MakeCode 積木：當啟動時顯示文字 G；當按鈕 A 被按下時把步數設為 0、序列寫入一行 RESET、顯示文字 G；當姿勢晃動發生時步數改變 1、序列寫入一行字串組合 STEP, 和步數、如果步數等於 1 就清空畫面、如果步數小於等於 20 就點亮 x 為步數減 1 除以 5 的餘數、y 為步數減 1 整數除以 5。">
+  </figure>
+
+  <h3>三個「當……」：程式什麼時候會動</h3>
+  <p>紫紅色、寫著「當……」的積木叫做<b>事件積木</b>。它們像三位守在門口的小幫手，平常都在等，等到某件事發生才開始工作。所以這支程式不是從上到下跑一次就結束，而是一直在等你按按鈕、等你搖。</p>
+  <div class="pg-events">
+    <div class="pg-event"><span class="pg-chip event">事件</span><b>當啟動時</b><p>一插上電、或剛下載完程式，<b>只做一次</b>。</p><p class="race-small">任務：顯示 G，一看就知道是綠隊的板子。</p></div>
+    <div class="pg-event"><span class="pg-chip event">事件</span><b>當按鈕 A 被按下</b><p>每按一次 A 就做一次。</p><p class="race-small">任務：步數歸零、告訴電腦「我歸零了」、重新顯示 G。</p></div>
+    <div class="pg-event"><span class="pg-chip event">事件</span><b>當姿勢 晃動 發生</b><p>板子裡的<b>加速度感測器</b>偵測到一次搖晃，就做一次。</p><p class="race-small">任務：步數加 1、把步數送給電腦、點亮下一顆燈。這是比賽的主角。</p></div>
+  </div>
+
+  <h3>每一塊積木的目的與功能</h3>
+  <p>積木的顏色代表它放在 MakeCode 哪一個抽屜。找積木的時候，先看顏色就知道去哪裡拿。</p>
+  <div class="lesson-table"><table class="pg-table">
+    <thead><tr><th>積木</th><th>抽屜</th><th>功能（它做了什麼）</th><th>目的（為什麼需要它）</th></tr></thead>
+    <tbody>
+      <tr class="pg-group"><td colspan="4">當啟動時</td></tr>
+      <tr><td><b>顯示 文字 "G"</b></td><td><span class="pg-chip basic">基本</span></td><td>在 LED 上顯示字母 G。</td><td>標示隊伍。網頁不靠這個字母分隊，它是給人看的。</td></tr>
+      <tr class="pg-group"><td colspan="4">當按鈕 A 被按下</td></tr>
+      <tr><td><b>變數 步數 設為 0</b></td><td><span class="pg-chip var">變數</span></td><td>把「步數」盒子裡的數字換成 0。</td><td>重新開始數。</td></tr>
+      <tr><td><b>序列 寫入一行文字 "RESET"</b></td><td><span class="pg-chip serial">序列</span></td><td>透過 USB 線送出一行 <code>RESET</code>。</td><td>告訴電腦「板子歸零了」，網頁才不會把下一個 <code>STEP,1</code> 誤會成倒退。</td></tr>
+      <tr><td><b>顯示 文字 "G"</b></td><td><span class="pg-chip basic">基本</span></td><td>把畫面換回字母 G。</td><td>讓你看得到「已經歸零」。</td></tr>
+      <tr class="pg-group"><td colspan="4">當姿勢 晃動 發生</td></tr>
+      <tr><td><b>變數 步數 改變 1</b></td><td><span class="pg-chip var">變數</span></td><td>步數 ＝ 步數 ＋ 1。</td><td>記住總共搖了幾下。</td></tr>
+      <tr><td><b>序列 寫入一行文字</b></td><td><span class="pg-chip serial">序列</span></td><td>把組合好的文字（例如 <code>STEP,7</code>）加上「換行」送出去。</td><td>網頁就是靠這一行知道你走了幾步。下面有序列特別篇。</td></tr>
+      <tr><td><b>字串組合 "STEP," 步數</b></td><td><span class="pg-chip text">文字</span></td><td>把 <code>STEP,</code> 和步數黏成一串，例如 <code>STEP,7</code>。</td><td>做出網頁看得懂的固定格式。</td></tr>
+      <tr><td><b>如果 步數 ＝ 1 那麼 清空畫面</b></td><td><span class="pg-chip logic">邏輯</span> <span class="pg-chip basic">基本</span></td><td>只有搖第 1 下時，把整個畫面關掉。</td><td>把字母 G 擦掉，才不會和進度燈混在一起。</td></tr>
+      <tr><td><b>如果 步數 ≤ 20 那麼……</b></td><td><span class="pg-chip logic">邏輯</span></td><td>步數還沒超過 20 才點燈。</td><td>進度燈只有 20 顆（上面四排），超過就不用再點。</td></tr>
+      <tr><td><b>點亮 x, y</b></td><td><span class="pg-chip led">LED</span></td><td>點亮第 x 行、第 y 列的那一顆燈。</td><td>一步亮一顆，由左到右、由上到下。</td></tr>
+      <tr><td><b>remainder of（步數 − 1）/ 5</b></td><td><span class="pg-chip math">數學</span></td><td>算「除以 5 的餘數」，結果是 0～4。</td><td>決定這一步是這一排的第幾顆（x）。</td></tr>
+      <tr><td><b>（步數 − 1）integer / 5</b></td><td><span class="pg-chip math">數學</span></td><td>算「除以 5 的整數商」，小數點後面直接丟掉。</td><td>決定這一步在第幾排（y）。</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>搖一下之後，發生了什麼事</h3>
+  <p>每搖一下，「當姿勢晃動」裡面的積木會<b>由上往下</b>依序執行一次。菱形代表「如果」：先判斷，成立才做裡面的事。</p>
+  <div class="pg-flow">
+    <div class="pg-step"><span class="pg-num" style="background:var(--pg-event)">▶</span><div><b>感測器偵測到一次搖晃</b><small>「當姿勢 晃動 發生」被叫醒。</small></div></div>
+    <div class="pg-step"><span class="pg-num" style="background:var(--pg-var)">1</span><div><b>步數改變 1</b><small>例如原本 6，現在變成 7。</small></div></div>
+    <div class="pg-step"><span class="pg-num" style="background:var(--pg-serial)">2</span><div><b>序列寫入一行 <code>STEP,7</code></b><small>文字從 USB 線出發，網頁收到後會把你往前推一格。</small></div></div>
+    <div class="pg-step"><span class="pg-num q" style="background:var(--pg-logic)"><i>?</i></span><div><b>步數 ＝ 1 嗎？</b><div class="pg-branch"><span>是（第 1 下）→ 清空畫面，擦掉 G</span><span>不是 → 跳過</span></div></div></div>
+    <div class="pg-step"><span class="pg-num q" style="background:var(--pg-logic)"><i>?</i></span><div><b>步數 ≤ 20 嗎？</b><div class="pg-branch"><span>是 → 點亮下一顆燈</span><span>不是（21 以上）→ 不點燈</span></div></div></div>
+    <div class="pg-step"><span class="pg-num" style="background:var(--pg-led)">3</span><div><b>點亮 x ＝ 1、y ＝ 1 的燈</b><small>第 7 步亮在第二排的第二顆。做完就回去等下一次搖晃。</small></div></div>
+  </div>
+  <p class="lesson-think">🤔 為什麼「序列寫入」要放在「點亮」前面？比賽比的是網頁上的步數，先送出步數，電腦就能早一點收到；點燈只是給自己看的。就算步數超過 20 不再點燈，序列寫入還是會照常送出，因為它不在「如果 步數 ≤ 20」的裡面。</p>
+
+  <h3>🎮 模擬器：搖一下看看</h3>
+  <p>按「搖一下」，看看哪些積木被執行、USB 線上跑過哪些字、電腦收到什麼。黃色的 <code>\r</code> <code>\n</code> 合起來就是「換行」。</p>
+  <div class="pg-sim">
+    <div class="pg-board" aria-label="micro:bit 模擬">
+      <span class="pg-board-name">micro:bit</span>
+      <div class="pg-board-row">
+        <button class="pg-btn-a" id="pgBtnA" type="button" aria-label="按鈕 A">A</button>
+        <div class="pg-matrix" id="pgMatrix" role="img" aria-label="5 乘 5 LED 畫面"></div>
+        <span class="pg-btn-b" aria-hidden="true">B</span>
+      </div>
+      <div class="pg-var">變數 步數 <b id="pgStep">0</b></div>
+    </div>
+    <div class="pg-side">
+      <div class="pg-actions">
+        <button type="button" class="race-btn" id="pgShake">搖一下</button>
+        <button type="button" class="race-btn ghost" id="pgShake5">連搖 5 下</button>
+        <button type="button" class="race-btn ghost" id="pgReset">按 A 歸零</button>
+        <button type="button" class="race-btn ghost" id="pgBoot">重新開機</button>
+      </div>
+      <div class="pg-panel"><div class="pg-panel-head"><span>剛剛執行的積木</span><span id="pgTraceTitle">當啟動時</span></div><ol class="pg-trace" id="pgTrace"></ol></div>
+      <div class="pg-panel"><div class="pg-panel-head"><span>USB 線上：一個字一個字排隊送</span></div><div class="pg-cable" id="pgCable"></div></div>
+      <div class="pg-panel"><div class="pg-panel-head"><span>電腦收到的序列資料（MakeCode「顯示資料」看到的就是這個）</span></div><div class="pg-monitor" id="pgMonitor" aria-live="polite"></div></div>
+    </div>
+  </div>
+
+  <h3>📡 序列特別篇：micro:bit 和電腦傳紙條</h3>
+  <div class="pg-serial">
+    <p><b>序列（Serial）</b>就是用一條線，把文字<b>一個字一個字排隊</b>送過去，就像暖身時的人體序列埠。micro:bit 用的是你插著的那條 USB 線；網頁用 Chrome 的「Web Serial」接收，再透過網路告訴競賽伺服器，對手的畫面才會跟著動。</p>
+    <div class="pg-pipe"><span><b>micro:bit</b>序列寫入一行</span><i>→</i><span><b>USB 線</b>每秒最多 115200 個位元</span><i>→</i><span><b>網頁</b>一行一行讀、找 STEP</span></div>
+  </div>
+  <div class="pg-cards">
+    <div class="pg-card">
+      <b>拆開一行 <code>STEP,7</code></b>
+      <div class="pg-anatomy"><span><em class="p1">STEP,</em><small>固定開頭：告訴網頁「這是步數」</small></span><span><em class="p2">7</em><small>變數「步數」現在的值</small></span><span><em class="p3">⏎</em><small>換行：這張紙條寫完了</small></span></div>
+      <p>「字串組合」把前兩塊黏在一起，「寫入<b>一行</b>文字」再自動加上換行。</p>
+    </div>
+    <div class="pg-card">
+      <b>為什麼一定要「一行」？</b>
+      <p>文字在線上是連續排隊的，網頁看到<b>換行</b>才知道一張紙條結束了。</p>
+      <p>✅ 寫入一行文字：<code>STEP,1⏎STEP,2⏎STEP,3⏎</code><br>❌ 寫入文字（沒換行）：<code>STEP,1STEP,2STEP,3</code></p>
+      <p>沒有換行，所有字黏成一長串，網頁分不出來，一步都不會算。</p>
+    </div>
+    <div class="pg-card">
+      <b>為什麼送「總步數」，不是每次只送 1？</b>
+      <p>網頁會把這次和上一次相減，算出多走了幾步。就算中間弄丟一張紙條（收到 <code>STEP,5</code> 之後直接收到 <code>STEP,7</code>），它也算得出你走了 2 步。</p>
+      <p>網頁只算<b>倒數結束之後多出來的步數</b>，所以比賽前偷搖不會算分。</p>
+    </div>
+    <div class="pg-card">
+      <b>RESET 有什麼用？</b>
+      <p>按 A 之後步數變回 0，下一次會送 <code>STEP,1</code>。先送一行 <code>RESET</code>，網頁就知道「板子重新開始數了」，不會以為你從 15 步倒退回 1 步。</p>
+      <p>RESET 只清掉<b>你自己板子</b>的計數，不會清掉對手的分數。</p>
+    </div>
+  </div>
+  <div class="lesson-table"><table>
+    <thead><tr><th>常見狀況</th><th>網頁會怎樣</th><th>怎麼修</th></tr></thead>
+    <tbody>
+      <tr><td>寫成 <code>STEP</code>，忘了逗號</td><td>收到 <code>STEP7</code>，看不懂，不計分</td><td>改成 <code>STEP,</code>（半形逗號）。</td></tr>
+      <tr><td>用了「序列 寫入文字」</td><td>沒有換行，一步都不算</td><td>換成「序列 寫入<b>一行</b>文字」。</td></tr>
+      <tr><td>用了「序列 寫入數值」</td><td>送出的是 <code>步數:7</code> 這種格式，不是 STEP</td><td>改用「寫入一行文字」加「字串組合」。</td></tr>
+      <tr><td>MakeCode 的「顯示資料」還開著</td><td>連不上 micro:bit，說它正被別的程式使用</td><td>關掉顯示資料視窗，再按「連接 micro:bit」。</td></tr>
+      <tr><td>網頁步數比燈數少幾步</td><td>有些電腦收資料是一批一批進來的</td><td>停手一下，網頁通常就會追上；一直差很多請告訴老師。</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>第幾步要亮哪一顆燈？</h3>
+  <div class="pg-coord">
+    <div class="pg-grid20" id="pgGrid20" aria-label="20 步對應的 LED 位置"></div>
+    <p>格子裡的數字是「第幾步」。每排 5 顆，所以每走 5 步就換下一排；最下面一排（y ＝ 4）不用。座標從 0 開始，所以第 1 步要先減 1，才會亮在 (0, 0)。</p>
+  </div>
+
+  <h3>小挑戰：你看懂了嗎？</h3>
+  <details><summary>1. 搖到第 25 下，LED 會怎樣？網頁會收到什麼？</summary><p>LED 不會再亮新的燈，因為 25 不符合「步數 ≤ 20」。但序列寫入不在那個「如果」裡面，所以網頁還是會收到 <code>STEP,25</code>。</p></details>
+  <details><summary>2. 如果把「如果 步數 ＝ 1 那麼 清空畫面」拿掉，會發生什麼事？</summary><p>字母 G 不會被擦掉，第一排的進度燈會和 G 的燈混在一起，看不出走到第幾步。</p></details>
+  <details><summary>3. 第 18 步會亮在哪裡？</summary><p>18 − 1 ＝ 17，17 ÷ 5 ＝ 3 餘 2，所以 x ＝ 2、y ＝ 3：第四排的正中間。</p></details>
+  <details><summary>4. 紅隊和綠隊的程式有什麼不同？網頁怎麼知道你是哪一隊？</summary><p>只差顯示的字母 R 或 G。網頁不是看字母分隊：建立房間的人是紅隊，輸入房號加入的人是綠隊。</p></details>
+  <details><summary>5. 想讓每 5 步就「嗶」一聲，要加在哪裡？</summary><p>加在「當姿勢 晃動 發生」裡面，用「如果（步數 除以 5 的餘數）＝ 0 那麼 播放音符」。不要動到序列寫入那一塊，網頁才收得到步數。</p></details>
+</section>
+
 <section class="race-panel lesson-sec">
   <h2>🎟️ 出口票（3 題全對才能出關）</h2>
   <ol>
     <li>「序列 寫入一行文字」送出的字，要到哪裡才看得到？</li>
     <li>步數是 7，字串組合 <code>STEP,</code> 步數，會送出什麼？</li>
-    <li>plot bar graph of 步數 up to 20，步數是 10 時，LED 大約亮幾成？</li>
+    <li>第 13 步會點亮哪一顆燈？寫出 x 和 y。</li>
   </ol>
 </section>
 
@@ -132,7 +266,7 @@
   <h2>🏠 回家作業：三層挑戰（任選一層）</h2>
   <p>繳交 MakeCode 程式截圖＋顯示資料截圖（下次上課展示或貼到 Padlet）。沒有 micro:bit 用模擬器完成就可以。</p>
   <div class="lesson-tiers">
-    <article><h3>🌱 基礎：跳跳計數器</h3><p>按 A 當作跳一下，送出 <code>JUMP:次數</code>，LED 用長條圖顯示，滿格 10 下。</p><p class="race-small">完成：顯示資料出現 JUMP:1…JUMP:10，第 10 下 LED 全亮。</p></article>
+    <article><h3>🌱 基礎：跳跳計數器</h3><p>按 A 當作跳一下，送出 <code>JUMP:次數</code>，LED 一下亮一顆，10 下亮滿上面兩排。</p><p class="race-small">完成：顯示資料出現 JUMP:1…JUMP:10，第 10 下剛好亮滿兩排。</p></article>
     <article><h3>🌿 進階：食農採收單</h3><p>搖一下收一籃茶葉，送出 <code>TEA:籃數</code>；按 B 送出 <code>TOTAL:籃數</code>。</p><p class="race-small">提示：字串組合可以按 ⊕ 接三段。完成：兩種標籤都正確，中間都有冒號。</p></article>
     <article><h3>🌳 挑戰：到終點會歡呼</h3><p>在競賽程式加上「如果…那麼」：步數到 20 時，送出一行 <code>GOAL</code> 並顯示笑臉。</p><p class="race-small">再寫一句：競賽網頁看到 GOAL 會怎麼樣？</p></article>
   </div>
@@ -141,12 +275,12 @@
 </main>
 <footer><b>✳ AI 食農大使</b><span>雙人競賽實驗室 · micro:bit 會說話</span><small>建議使用電腦版 Chrome／Edge</small></footer>
 <script type="module">
-// 長條圖預測格：點格子畫出預測（只在這個畫面，不會儲存）
+// 一步亮一顆的預測格：點格子畫出預測（只在這個畫面，不會儲存）
 const box = document.getElementById('predict');
-for (const n of [0, 5, 10, 15, 20]) {
+for (const n of [1, 5, 6, 13, 20]) {
   const card = document.createElement('div');
   card.className = 'lesson-led-card';
-  card.innerHTML = `<b>步數 ${n}</b><div class="lesson-led" role="group" aria-label="步數 ${n} 的預測"></div><button type="button" class="race-btn ghost tiny">清除</button>`;
+  card.innerHTML = `<b>按到第 ${n} 下</b><div class="lesson-led" role="group" aria-label="步數 ${n} 的預測"></div><button type="button" class="race-btn ghost tiny">清除</button>`;
   const grid = card.querySelector('.lesson-led');
   for (let i = 0; i < 25; i++) {
     const c = document.createElement('button');
@@ -157,6 +291,76 @@ for (const n of [0, 5, 10, 15, 20]) {
   card.querySelector('.race-btn').addEventListener('click', () => grid.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', 'false')));
   box.append(card);
 }
+// 程式拆解模擬器：只在這個畫面模擬，不會連到 micro:bit、不會儲存
+{
+  const LETTER_G = ['.###.', '#....', '#..##', '#...#', '.###.'];
+  const $ = id => document.getElementById(id);
+  const matrix = $('pgMatrix'), monitor = $('pgMonitor'), cable = $('pgCable'), trace = $('pgTrace'), traceTitle = $('pgTraceTitle'), stepVal = $('pgStep');
+  const cells = [];
+  for (let i = 0; i < 25; i++) { const c = document.createElement('i'); matrix.append(c); cells.push(c); }
+  let steps = 0;
+  const at = (x, y) => cells[y * 5 + x];
+  const clearScreen = () => cells.forEach(c => c.classList.remove('on', 'new'));
+  const showLetter = () => { clearScreen(); for (let y = 0; y < 5; y++) for (let x = 0; x < 5; x++) if (LETTER_G[y][x] === '#') at(x, y).classList.add('on'); };
+  const lightUp = (x, y) => { const c = at(x, y); c.classList.remove('new'); void c.offsetWidth; c.classList.add('on', 'new'); };
+  const chip = { 變數: 'var', 序列: 'serial', 邏輯: 'logic', 基本: 'basic', LED: 'led' };
+  function setTrace(title, rows) {
+    traceTitle.textContent = title;
+    trace.replaceChildren(...rows.map(([tag, text, skip]) => {
+      const li = document.createElement('li'); if (skip) li.className = 'pg-skip';
+      const c = document.createElement('span'); c.className = 'pg-chip ' + chip[tag]; c.textContent = tag;
+      const t = document.createElement('span'); t.textContent = text;
+      li.append(c, t); return li;
+    }));
+  }
+  function sendLine(text) {
+    cable.replaceChildren(...[...text, '\\r', '\\n'].map((ch, i) => {
+      const s = document.createElement('span'); s.className = 'ch' + (ch.length > 1 ? ' ctl' : ''); s.textContent = ch; s.style.animationDelay = (i * 0.05) + 's'; return s;
+    }));
+    monitor.querySelector('.empty')?.remove();
+    const ln = document.createElement('div'); ln.className = 'ln' + (text === 'RESET' ? ' reset' : ''); ln.textContent = text;
+    const eol = document.createElement('span'); eol.className = 'eol'; eol.textContent = ' ⏎'; ln.append(eol);
+    monitor.append(ln);
+    while (monitor.children.length > 60) monitor.firstChild.remove();
+    monitor.scrollTop = monitor.scrollHeight;
+  }
+  function boot() {
+    steps = 0; stepVal.textContent = steps; showLetter();
+    cable.innerHTML = '<span class="hint">開機時沒有送出任何文字</span>';
+    monitor.innerHTML = '<span class="empty">等待資料……</span>';
+    setTrace('當啟動時', [['基本', '顯示 文字 "G"：畫面出現 G']]);
+  }
+  function shake() {
+    steps += 1; stepVal.textContent = steps;
+    const line = 'STEP,' + steps; sendLine(line);
+    const rows = [['變數', `步數 改變 1 → 步數 ＝ ${steps}`], ['序列', `寫入一行文字 "${line}" ＋ 換行`]];
+    if (steps === 1) { clearScreen(); rows.push(['邏輯', '步數 ＝ 1？成立 → 清空畫面']); }
+    else rows.push(['邏輯', '步數 ＝ 1？不成立 → 跳過', true]);
+    if (steps <= 20) {
+      const n = steps - 1, x = n % 5, y = Math.floor(n / 5);
+      lightUp(x, y);
+      rows.push(['邏輯', '步數 ≤ 20？成立'], ['LED', `點亮 x ＝（${steps} − 1）除以 5 的餘數 ＝ ${x}，y ＝（${steps} − 1）整數除以 5 ＝ ${y}`]);
+    } else rows.push(['邏輯', '步數 ≤ 20？不成立 → 不點燈（但上面已經送出步數了）', true]);
+    setTrace('當姿勢 晃動 發生', rows);
+  }
+  function pressA() {
+    steps = 0; stepVal.textContent = steps; sendLine('RESET'); showLetter();
+    setTrace('當按鈕 A 被按下', [['變數', '步數 設為 0'], ['序列', '寫入一行文字 "RESET" ＋ 換行'], ['基本', '顯示 文字 "G"']]);
+  }
+  $('pgShake').addEventListener('click', shake);
+  $('pgShake5').addEventListener('click', () => { for (let k = 0; k < 5; k++) setTimeout(shake, k * 260); });
+  $('pgReset').addEventListener('click', pressA);
+  $('pgBtnA').addEventListener('click', pressA);
+  $('pgBoot').addEventListener('click', boot);
+  boot();
+  // 20 步座標表
+  const g = $('pgGrid20');
+  const add = (cls, txt) => { const d = document.createElement('div'); d.className = cls; d.textContent = txt; g.append(d); };
+  add('h', '');
+  for (let x = 0; x < 5; x++) add('h', 'x=' + x);
+  for (let y = 0; y < 5; y++) { add('h', 'y=' + y); for (let x = 0; x < 5; x++) y < 4 ? add('c used', String(y * 5 + x + 1)) : add('c spare', '不用'); }
+}
+
 </script>
 <script>(async()=>{let v="";try{v=(await (await fetch("../version.json",{cache:"no-store"})).json()).v}catch(e){}v=v||Date.now().toString(36);const l=document.createElement("link");l.rel="stylesheet";l.href="../src/styles.css?v="+v;const show=()=>{const b=document.getElementById("boot-hide");if(b)b.remove()};l.onload=show;l.onerror=show;setTimeout(show,4000);document.head.append(l);if(!document.querySelector("link[data-fonts]")){const f=document.createElement("link");f.rel="stylesheet";f.dataset.fonts="1";f.href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap";document.head.append(f)}})();</script>
 </body></html>

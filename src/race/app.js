@@ -124,7 +124,7 @@ function helpHTML() {
       <li><b>當 按鈕 A 被按下時</b>：<b>步數 設為 0</b>，再寫入一行 <code>RESET</code>。</li>
       <li>下載到 micro:bit 後，<b>關掉 MakeCode 的「顯示資料」視窗</b>，不然這一頁會連不上板子。</li>
     </ol>
-    <p><a href="./lesson.html">📡 看完整課程：序列、字串組合、長條圖的練習與遊戲 →</a></p>
+    <p><a href="./lesson.html">📡 看完整課程：序列、字串組合、一步亮一顆燈與程式拆解 →</a></p>
     <p class="race-small">和第 2 週一樣用逗號；寫成冒號 <code>STEP:12</code> 也能使用。比賽只計算「比賽開始後新增的步數」，所以不用先把板子歸零。</p>
   </details>`;
 }
