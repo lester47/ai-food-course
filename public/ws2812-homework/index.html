@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>燈條進階作業</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: same system as /ws2812/ — sticky tabs over one reading column; each assignment is one card with story, simulator, tasks, hints, checklist */
+:root{
+  --bg:#f4f7f3; --surface:#ffffff; --surface2:#eef3ee; --fg:#1b241f; --muted:#5a6a61; --line:#d6dfd8;
+  --accent:#1f7a4d; --accent-soft:#e1f0e6; --warn:#b4511a; --warn-soft:#fbede2;
+  --led-off:#2a302c; --sim-bg:#161b18; --sim-fg:#cfe0d5;
+  --font-body:"Noto Sans TC",system-ui,"PingFang TC","Microsoft JhengHei",sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111613; --surface:#1a211d; --surface2:#202923; --fg:#e3ebe6; --muted:#98a99f; --line:#2d3934;
+  --accent:#5cc98f; --accent-soft:#1c3327; --warn:#f0a070; --warn-soft:#3a2619;
+  --led-off:#2a302c; --sim-bg:#0b0f0c; --sim-fg:#cfe0d5; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111613; --surface:#1a211d; --surface2:#202923; --fg:#e3ebe6; --muted:#98a99f; --line:#2d3934;
+  --accent:#5cc98f; --accent-soft:#1c3327; --warn:#f0a070; --warn-soft:#3a2619;
+  --led-off:#2a302c; --sim-bg:#0b0f0c; --sim-fg:#cfe0d5; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16.5px;line-height:1.8}
+.pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.col{max-width:880px;margin:0 auto}
+header.top{background:var(--surface);border-bottom:1px solid var(--line)}
+header.top .col{padding-block:28px 18px}
+.eyebrow{font-size:13px;letter-spacing:.12em;font-weight:700;color:var(--accent)}
+h1{font-size:clamp(26px,5.4vw,40px);font-weight:900;line-height:1.25;margin:6px 0 4px;text-wrap:balance}
+.sub{color:var(--muted);margin:0}
+.back{font-size:14px;font-weight:700}
+nav.tabs{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.tabs .col{display:flex;gap:4px;align-items:center;overflow-x:auto;padding-block:6px}
+nav.tabs a{flex:none;text-decoration:none;color:var(--muted);font-weight:700;padding:8px 12px;border-radius:8px;font-size:15px;white-space:nowrap}
+nav.tabs a:hover{color:var(--fg);background:var(--surface2)}
+.tbtn{margin-left:auto;flex:none;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:99px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+body.teacher .tbtn{background:var(--warn);color:#fff;border-color:var(--warn)}
+main .col{padding-block:16px 80px}
+.intro{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 22px;margin:18px 0}
+.intro ul{margin:6px 0;padding-left:20px}
+section.hw{scroll-margin-top:60px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:8px 22px 22px;margin:22px 0}
+section.hw>h2{font-size:clamp(22px,4.2vw,28px);font-weight:900;line-height:1.35;margin:14px 0 2px;text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px;padding:0;list-style:none}
+.meta li{background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13.5px;padding:2px 11px;border-radius:99px}
+.meta li.lv{background:var(--warn-soft);color:var(--warn)}
+.story{border-left:4px solid var(--accent);background:var(--surface2);padding:10px 16px;border-radius:0 10px 10px 0;margin:10px 0 4px}
+.story b:first-child{display:block;color:var(--accent);font-size:14px}
+h3{font-size:18px;font-weight:900;margin:20px 0 4px}
+p,li{max-width:68ch}
+ol.task li{margin:3px 0}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--surface2);padding:1px 6px;border-radius:4px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;align-items:start}
+.two>*{min-width:0}
+@media (min-width:760px){.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+details.hint{margin:6px 0;border:1px solid var(--line);border-radius:10px;padding:6px 14px;background:var(--surface)}
+details.hint summary{cursor:pointer;font-weight:700;color:var(--accent)}
+details.hint p{margin:6px 0}
+.bonus{border:2px dashed var(--warn);border-radius:12px;padding:8px 16px;margin:14px 0}
+.bonus b:first-child{color:var(--warn)}
+.check{list-style:none;padding:0;margin:6px 0}
+.check li{margin:4px 0}
+.check label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.check input{width:20px;height:20px;margin-top:4px;accent-color:var(--accent);flex:none}
+.done-msg{font-weight:700;color:var(--accent);min-height:1.6em;margin:4px 0 0}
+/* code */
+details.code{margin:12px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface2)}
+details.code summary{cursor:pointer;padding:8px 14px;font-weight:700;font-size:14.5px;color:var(--muted)}
+details.code pre{margin:0;padding:12px 14px;overflow-x:auto;font:13px/1.6 var(--font-mono);border-top:1px solid var(--line)}
+.copy{font:inherit;font-size:13px;margin:0 14px 12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:6px;padding:4px 12px;cursor:pointer}
+/* simulator */
+.sim{background:var(--sim-bg);color:var(--sim-fg);border-radius:14px;padding:14px 16px;margin:12px 0}
+.sim .ttl{font:600 12px var(--font-mono);letter-spacing:.08em;opacity:.7;display:flex;justify-content:space-between;gap:8px}
+.leds{display:flex;gap:6px;margin:14px 0 4px;justify-content:space-between}
+.leds div{flex:1;max-width:32px;aspect-ratio:1;border-radius:50%;background:var(--led-off);border:2px solid #000;position:relative;transition:background .05s}
+.leds div span{position:absolute;top:calc(100% + 3px);left:50%;transform:translateX(-50%);font:10px var(--font-mono);opacity:.55}
+.sim .ctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.sim button{font:700 14px var(--font-body);border:0;border-radius:99px;padding:6px 14px;cursor:pointer;background:#2f3a33;color:#fff}
+.sim button.ab{background:#3f5d4c}
+.sim button.rst{background:transparent;border:1px solid #3c4a41;color:var(--sim-fg);font-weight:500}
+.sim button:active{transform:scale(.95)}
+.sim .ro{font:12.5px var(--font-mono);margin-top:10px;opacity:.9;display:flex;flex-wrap:wrap;gap:4px 16px}
+.sim .ro .mx{color:#ff8080;font-weight:600}
+/* teacher */
+.t-only{display:none}
+body.teacher .t-only{display:block}
+.t-only.tip{background:var(--warn-soft);border-radius:10px;padding:10px 14px;margin:12px 0;font-size:15px}
+.t-only.tip::before{content:"教師提示　";font-weight:900;color:var(--warn)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
+footer{color:var(--muted);font-size:13.5px;border-top:1px solid var(--line);margin-top:40px;padding-top:14px}
+</style>
+</head>
+<body>
+<header class="top pad"><div class="col">
+  <a class="back" href="../#/weeks/w1">← 回到第 1 週</a>
+  <div class="eyebrow" style="margin-top:10px">假日班・南投食農大使　WS2812 燈條延伸</div>
+  <h1>燈條進階作業：田裡的三個任務</h1>
+  <p class="sub">從「紅隊 A、綠隊 B 賽跑」出發，難度一份比一份高。需要 micro:bit、robot:bit 和接在 P0 的 10 顆燈條。</p>
+</div></header>
+
+<nav class="tabs pad" aria-label="作業"><div class="col">
+  <a href="#hw1">一　搶收稻田</a>
+  <a href="#hw2">二　麻雀偷吃</a>
+  <a href="#hw3">三　抓菜蟲</a>
+  <button class="tbtn" id="tbtn" type="button" aria-pressed="false">教師模式：關</button>
+</div></nav>
+
+<main class="pad"><div class="col">
+
+<div class="intro">
+  <p style="margin:6px 0"><b>開始前</b>，每份作業的程式都要先建立燈條：</p>
+  <div data-code="setup" data-open="1" data-label="每份作業都要先放的程式"></div>
+  <ul>
+    <li>先在模擬器上玩一玩，看看完成後應該長什麼樣子，再打開 MakeCode 自己寫。</li>
+    <li>卡住了再打開「提示」，一次只看一個。</li>
+    <li>寫完用「自我檢核」一項一項測，全部打勾才算完成。</li>
+  </ul>
+  <div class="t-only tip">參考答案在每份作業最下方，只有教師模式看得到。程式還沒在實體燈條上驗證，上課前請先跑一次。</div>
+</div>
+
+<!-- ========== HW1 ========== -->
+<section class="hw" id="hw1">
+  <h2>作業一　搶收稻田大作戰</h2>
+  <ul class="meta"><li class="lv">難度 ★★</li><li>for 迴圈</li><li>倒著數的編號</li><li>比大小</li></ul>
+  <div class="story"><b>情境</b>颱風快來了！稻田裡 10 格稻子要趕快收割。紅隊從西邊（第 0 格）往東收，綠隊從東邊（第 9 格）往西收，兩隊一路收到碰頭為止。收得比較多格的那一隊，就是今天的「搶收王」。</div>
+  <div class="two">
+    <div>
+      <h3>任務</h3>
+      <ol class="task">
+        <li>按 A，紅隊多收一格：紅燈從第 0 顆往右<b>一格一格累積</b>，收過的燈要一直亮著。</li>
+        <li>按 B，綠隊多收一格：綠燈從第 9 顆往左累積。</li>
+        <li>10 格都收完時，按 A、B 都不會再有反應。</li>
+        <li>點陣顯示結果：紅隊贏 <code>R</code>、綠隊贏 <code>G</code>、平手 <code>=</code>。</li>
+        <li>按 A+B 重新開始。</li>
+      </ol>
+    </div>
+    <div><div data-sim="hw1"></div></div>
+  </div>
+  <h3>提示</h3>
+  <details class="hint"><summary>提示 1：綠燈的編號怎麼算？</summary><p>綠隊收了 <code>green</code> 格，亮的燈是 <code>9</code>、<code>8</code>、<code>7</code>…。用迴圈變數 <code>j</code> 從 0 數到 <code>green - 1</code>，要亮的燈就是 <code>9 - j</code>。</p></details>
+  <details class="hint"><summary>提示 2：怎麼知道收完了？</summary><p>兩隊加起來剛好 10 格：<code>red + green == 10</code>。按鈕裡先檢查 <code>red + green &lt; 10</code> 才能前進。</p></details>
+  <details class="hint"><summary>提示 3：畫燈的好習慣</summary><p>做一個函式 <code>draw</code>：先清除，再用兩個迴圈把紅、綠都畫上去，最後顯示。A、B、A+B 都呼叫它。</p></details>
+  <div class="bonus"><b>加分挑戰</b>收割完成時，贏的那一隊在燈條上閃 3 下。</div>
+  <h3>自我檢核</h3>
+  <ul class="check" data-check="hw1">
+    <li><label><input type="checkbox">紅燈和綠燈都是一格一格累積，不是只有一顆在跑</label></li>
+    <li><label><input type="checkbox">兩隊碰頭以後，按 A、B 都不會再變</label></li>
+    <li><label><input type="checkbox">平手（5 比 5）的時候顯示 <code>=</code></label></li>
+    <li><label><input type="checkbox">按 A+B 可以重新開始</label></li>
+  </ul>
+  <p class="done-msg" aria-live="polite"></p>
+  <div class="t-only"><div class="tip t-only">批改重點：綠燈編號是不是 <code>9 - j</code>；有沒有處理平手。</div><div data-code="hw1" data-open="1"></div></div>
+</section>
+
+<!-- ========== HW2 ========== -->
+<section class="hw" id="hw2">
+  <h2>作業二　小心！麻雀來偷吃</h2>
+  <ul class="meta"><li class="lv">難度 ★★★</li><li>隨機數</li><li>如果…就</li><li>不能小於 0</li></ul>
+  <div class="story"><b>情境</b>紅隊和綠隊在田埂上比賽跑到終點，可是田裡停著一隻愛偷吃的<b>麻雀（黃燈）</b>。誰剛好踩到麻雀那一格，麻雀會被嚇飛，那一隊也嚇得<b>退後 2 格</b>。麻雀飛走後，會隨機停到另一格。</div>
+  <div class="two">
+    <div>
+      <h3>任務</h3>
+      <ol class="task">
+        <li>延續紅綠隊賽跑：A 紅隊前進、B 綠隊前進，先到第 10 格的贏，點陣顯示 <code>R</code> 或 <code>G</code>。</li>
+        <li>開始時，麻雀隨機停在第 1～8 格的其中一格，用黃燈表示。</li>
+        <li>任何一隊走到麻雀那一格，就退後 2 格（最少退到 0），點陣顯示哭臉，麻雀換到新的隨機位置。</li>
+        <li>兩隊在同一格時，那顆燈顯示紫色。</li>
+        <li>按 A+B 重新開始，麻雀也要重新選位置。</li>
+      </ol>
+    </div>
+    <div><div data-sim="hw2"></div></div>
+  </div>
+  <h3>提示</h3>
+  <details class="hint"><summary>提示 1：隨機位置</summary><p>「數學 → 隨機取數 1 到 8」，也就是 <code>randint(1, 8)</code>，存進變數 <code>bird</code>。</p></details>
+  <details class="hint"><summary>提示 2：怎樣算踩到麻雀？</summary><p>走了 <code>step</code> 步的隊伍，燈在編號 <code>step - 1</code>。所以 <code>step - 1 == bird</code> 就是踩到了。</p></details>
+  <details class="hint"><summary>提示 3：退後不能變負數</summary><p>退 2 格後如果小於 0，就設成 0。也可以用「數學 → 最大值」：<code>Math.max(0, step - 2)</code>。</p></details>
+  <details class="hint"><summary>提示 4：畫燈的順序</summary><p>先畫麻雀，再畫兩隊。隊伍和麻雀剛好在同一格時，看得到的是隊伍。</p></details>
+  <div class="bonus"><b>加分挑戰</b>再加第二隻麻雀；或是每隊只會被嚇 2 次，第 3 次踩到時麻雀不會飛走。</div>
+  <h3>自我檢核</h3>
+  <ul class="check" data-check="hw2">
+    <li><label><input type="checkbox">重新開始幾次，麻雀的位置都不一樣</label></li>
+    <li><label><input type="checkbox">踩到麻雀會退 2 格，麻雀會換位置</label></li>
+    <li><label><input type="checkbox">在很前面踩到麻雀時，步數不會變成負數</label></li>
+    <li><label><input type="checkbox">兩隊在同一格時燈是紫色</label></li>
+  </ul>
+  <p class="done-msg" aria-live="polite"></p>
+  <div class="t-only"><div class="tip t-only">批改重點：退後有沒有擋住負數；踩到後麻雀有沒有換位置；A+B 有沒有重抽麻雀。</div><div data-code="hw2" data-open="1"></div></div>
+</section>
+
+<!-- ========== HW3 ========== -->
+<section class="hw" id="hw3">
+  <h2>作業三　抓菜蟲</h2>
+  <ul class="meta"><li class="lv">難度 ★★★★</li><li>重複無限次</li><li>速度變數</li><li>或（or）</li><li>遊戲開關</li></ul>
+  <div class="story"><b>情境</b>菜園裡有一隻<b>菜蟲（紅燈）</b>沿著 10 格菜畦一直爬。第 4、5 格是高麗菜葉（綠燈）。菜蟲爬到菜葉上的時候按 A，就能抓住牠！抓到 5 隻就過關；抓錯時間 3 次，菜就被吃光了。每抓到一隻，下一隻會爬得更快。</div>
+  <div class="two">
+    <div>
+      <h3>任務</h3>
+      <ol class="task">
+        <li>用「重複無限次」讓紅燈從第 0 顆爬到第 9 顆，再回到第 0 顆，一直循環。第 4、5 顆一直亮綠燈。</li>
+        <li>用變數 <code>speed</code> 控制速度，一開始每格停 300 毫秒。</li>
+        <li>菜蟲在第 4 或第 5 格時按 A：<code>score</code> 加 1，點陣顯示分數，<code>speed</code> 減 30（最快 80）。</li>
+        <li>菜蟲不在菜葉上時按 A：<code>miss</code> 加 1，點陣顯示 ✗。</li>
+        <li><code>score</code> 到 5：燈條彩虹、點陣笑臉。<code>miss</code> 到 3：燈條全紅、點陣哭臉。兩種情況遊戲都結束。</li>
+        <li>按 A+B 重新開始。</li>
+      </ol>
+    </div>
+    <div><div data-sim="hw3"></div></div>
+  </div>
+  <h3>提示</h3>
+  <details class="hint"><summary>提示 1：讓菜蟲爬</summary><p>重複無限次裡：清除 → 第 4、5 顆設綠色 → 第 <code>pos</code> 顆設紅色 → 顯示 → 暫停 <code>speed</code> → <code>pos</code> 加 1，到 10 就回到 0。</p></details>
+  <details class="hint"><summary>提示 2：在菜葉上嗎？</summary><p>用「或」把兩個條件接起來：<code>pos == 4 or pos == 5</code>。</p></details>
+  <details class="hint"><summary>提示 3：遊戲結束了怎麼停？</summary><p>做一個變數 <code>playing</code>，一開始是 true。重複無限次裡寫「如果 playing 那麼」才讓菜蟲爬。遊戲結束時設成 false，菜蟲就不會爬出來把彩虹蓋掉。</p></details>
+  <div class="bonus"><b>加分挑戰</b>用 B 當第二個玩家，抓第 0、9 格的菜蟲；或在點陣上用長條圖顯示 <code>score</code> 離 5 還差多少。</div>
+  <h3>自我檢核</h3>
+  <ul class="check" data-check="hw3">
+    <li><label><input type="checkbox">菜蟲會一直循環爬，而且越抓越快</label></li>
+    <li><label><input type="checkbox">按太早或太晚會算失誤，顯示 ✗</label></li>
+    <li><label><input type="checkbox">抓到 5 隻是彩虹，失誤 3 次是全紅</label></li>
+    <li><label><input type="checkbox">遊戲結束後菜蟲不會再出現，按 A 也不會加分</label></li>
+  </ul>
+  <p class="done-msg" aria-live="polite"></p>
+  <div class="t-only"><div class="tip t-only">批改重點：有沒有用 <code>playing</code> 停止菜蟲；速度有沒有設下限。<code>showNumber</code> 跑字時菜蟲仍會繼續爬，這是正常的。</div><div data-code="hw3" data-open="1"></div></div>
+</section>
+
+<footer>模擬器是示意效果，實際以 micro:bit 和燈條為準。點陣上的顯示以文字表示在模擬器下方。</footer>
+</div></main>
+
+<script>
+const CODE={
+setup:`let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(50)`,
+hw1:`let red = 0
+let green = 0
+let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(50)
+
+function draw () {
+    strip.clear()
+    for (let i = 0; i < red; i++) {
+        strip.setPixelColor(i, neopixel.colors(NeoPixelColors.Red))
+    }
+    for (let j = 0; j < green; j++) {
+        strip.setPixelColor(9 - j, neopixel.colors(NeoPixelColors.Green))
+    }
+    strip.show()
+}
+function checkEnd () {
+    if (red + green == 10) {
+        if (red > green) {
+            basic.showString("R")
+        } else if (green > red) {
+            basic.showString("G")
+        } else {
+            basic.showString("=")
+        }
+    }
+}
+input.onButtonPressed(Button.A, function () {
+    if (red + green < 10) {
+        red += 1
+        draw()
+        checkEnd()
+    }
+})
+input.onButtonPressed(Button.B, function () {
+    if (red + green < 10) {
+        green += 1
+        draw()
+        checkEnd()
+    }
+})
+input.onButtonPressed(Button.AB, function () {
+    red = 0
+    green = 0
+    basic.clearScreen()
+    draw()
+})
+draw()`,
+hw2:`let redStep = 0
+let greenStep = 0
+let bird = randint(1, 8)
+let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(50)
+
+function draw () {
+    strip.clear()
+    strip.setPixelColor(bird, neopixel.colors(NeoPixelColors.Yellow))
+    if (redStep > 0) {
+        strip.setPixelColor(redStep - 1, neopixel.colors(NeoPixelColors.Red))
+    }
+    if (greenStep > 0) {
+        if (greenStep == redStep) {
+            strip.setPixelColor(greenStep - 1, neopixel.colors(NeoPixelColors.Purple))
+        } else {
+            strip.setPixelColor(greenStep - 1, neopixel.colors(NeoPixelColors.Green))
+        }
+    }
+    strip.show()
+}
+input.onButtonPressed(Button.A, function () {
+    if (redStep < 10 && greenStep < 10) {
+        redStep += 1
+        if (redStep - 1 == bird) {
+            redStep = Math.max(0, redStep - 2)
+            bird = randint(1, 8)
+            basic.showIcon(IconNames.Sad)
+        }
+        draw()
+        if (redStep == 10) {
+            basic.showString("R")
+        }
+    }
+})
+input.onButtonPressed(Button.B, function () {
+    if (redStep < 10 && greenStep < 10) {
+        greenStep += 1
+        if (greenStep - 1 == bird) {
+            greenStep = Math.max(0, greenStep - 2)
+            bird = randint(1, 8)
+            basic.showIcon(IconNames.Sad)
+        }
+        draw()
+        if (greenStep == 10) {
+            basic.showString("G")
+        }
+    }
+})
+input.onButtonPressed(Button.AB, function () {
+    redStep = 0
+    greenStep = 0
+    bird = randint(1, 8)
+    basic.clearScreen()
+    draw()
+})
+draw()`,
+hw3:`let pos = 0
+let speed = 300
+let score = 0
+let miss = 0
+let playing = true
+let strip = neopixel.create(DigitalPin.P0, 10, NeoPixelMode.RGB)
+strip.setBrightness(50)
+
+basic.forever(function () {
+    if (playing) {
+        strip.clear()
+        strip.setPixelColor(4, neopixel.colors(NeoPixelColors.Green))
+        strip.setPixelColor(5, neopixel.colors(NeoPixelColors.Green))
+        strip.setPixelColor(pos, neopixel.colors(NeoPixelColors.Red))
+        strip.show()
+        basic.pause(speed)
+        pos += 1
+        if (pos >= 10) {
+            pos = 0
+        }
+    }
+})
+input.onButtonPressed(Button.A, function () {
+    if (!(playing)) {
+        return
+    }
+    if (pos == 4 || pos == 5) {
+        score += 1
+        speed = Math.max(80, speed - 30)
+        basic.showNumber(score)
+    } else {
+        miss += 1
+        basic.showIcon(IconNames.No)
+    }
+    if (score >= 5) {
+        playing = false
+        strip.showRainbow(1, 360)
+        basic.showIcon(IconNames.Happy)
+    } else if (miss >= 3) {
+        playing = false
+        strip.showColor(neopixel.colors(NeoPixelColors.Red))
+        basic.showIcon(IconNames.Sad)
+    }
+})
+input.onButtonPressed(Button.AB, function () {
+    pos = 0
+    speed = 300
+    score = 0
+    miss = 0
+    basic.clearScreen()
+    playing = true
+})`
+};
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+document.querySelectorAll('[data-code]').forEach(el=>{
+  const k=el.dataset.code, label=el.dataset.label||'參考答案（JavaScript，可貼進 MakeCode）';
+  el.innerHTML=`<details class="code"${el.dataset.open?' open':''}><summary>${label}</summary><pre>${esc(CODE[k])}</pre><button type="button" class="copy">複製程式</button></details>`;
+  el.querySelector('.copy').addEventListener('click',e=>{
+    const b=e.currentTarget, pre=el.querySelector('pre');
+    const done=()=>{b.textContent='已複製';setTimeout(()=>b.textContent='複製程式',1500)};
+    const fallback=()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='已選取，請按 Ctrl+C'};
+    try{navigator.clipboard.writeText(CODE[k]).then(done,fallback)}catch(_){fallback()}
+  });
+});
+
+/* ---------- strip simulator ---------- */
+const C={red:'#ff3030',green:'#20d060',yellow:'#ffd820',purple:'#b050ff'};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+class Sim{
+  constructor(el,cfg){
+    this.cfg=cfg;el.className='sim';
+    el.innerHTML=`<div class="ttl"><span>模擬器・${cfg.title}</span><span>P0 × 10</span></div>
+      <div class="leds">${Array.from({length:10},(_,i)=>`<div><span>${i}</span></div>`).join('')}</div>
+      <div class="ctl">${cfg.buttons.map(([k,l])=>`<button type="button" data-b="${k}" class="${k==='AB'?'ab':''}">${l}</button>`).join('')}</div>
+      <div class="ro"></div>`;
+    this.leds=[...el.querySelectorAll('.leds div')];this.ro=el.querySelector('.ro');
+    el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{cfg.on[b.dataset.b](this);this.readout()}));
+    this.v={};this.buf=Array(10).fill(null);cfg.on.AB(this);this.readout();
+  }
+  clear(){this.buf.fill(null)}
+  set(i,c){if(i>=0&&i<10)this.buf[i]=C[c]||c}
+  show(){this.leds.forEach((d,i)=>{const c=this.buf[i];d.style.background=c||'';d.style.boxShadow=c?`0 0 12px ${c}`:''})}
+  rainbow(){this.buf=this.buf.map((_,i)=>`hsl(${1+i*36} 100% 55%)`);this.show()}
+  fill(c){this.buf.fill(C[c]);this.show()}
+  readout(){this.ro.innerHTML=this.cfg.readout(this)+(this.v.disp?`<span class="mx">點陣：${this.v.disp}</span>`:'')}
+}
+const S={
+hw1:{title:'搶收稻田',buttons:[['A','A 紅隊收割'],['B','B 綠隊收割'],['AB','A+B 重來']],
+  draw(s){s.clear();for(let i=0;i<s.v.red;i++)s.set(i,'red');for(let j=0;j<s.v.green;j++)s.set(9-j,'green');s.show()},
+  end(s){if(s.v.red+s.v.green===10)s.v.disp=s.v.red>s.v.green?'R':s.v.green>s.v.red?'G':'='},
+  on:{A:s=>{if(s.v.red+s.v.green<10){s.v.red++;S.hw1.draw(s);S.hw1.end(s)}},
+      B:s=>{if(s.v.red+s.v.green<10){s.v.green++;S.hw1.draw(s);S.hw1.end(s)}},
+      AB:s=>{s.v={red:0,green:0,disp:''};S.hw1.draw(s)}},
+  readout:s=>`<span>red = ${s.v.red}</span><span>green = ${s.v.green}</span>`},
+hw2:{title:'麻雀偷吃',buttons:[['A','A 紅隊前進'],['B','B 綠隊前進'],['AB','A+B 重來']],
+  draw(s){const v=s.v;s.clear();s.set(v.bird,'yellow');if(v.r>0)s.set(v.r-1,'red');if(v.g>0)s.set(v.g-1,v.g===v.r?'purple':'green');s.show()},
+  step(s,k,win){const v=s.v;if(v.r<10&&v.g<10){v[k]++;v.disp='';if(v[k]-1===v.bird){v[k]=Math.max(0,v[k]-2);v.bird=rnd(1,8);v.disp='哭臉'}S.hw2.draw(s);if(v[k]===10)v.disp=win}},
+  on:{A:s=>S.hw2.step(s,'r','R'),B:s=>S.hw2.step(s,'g','G'),AB:s=>{s.v={r:0,g:0,bird:rnd(1,8),disp:''};S.hw2.draw(s)}},
+  readout:s=>`<span>redStep = ${s.v.r}</span><span>greenStep = ${s.v.g}</span><span>bird = ${s.v.bird}</span>`},
+hw3:{title:'抓菜蟲',buttons:[['A','A 抓！'],['AB','A+B 重來']],
+  tick(s){clearTimeout(s.t);const v=s.v;if(!v.playing)return;
+    s.clear();s.set(4,'green');s.set(5,'green');s.set(v.pos,'red');s.show();s.readout();
+    s.t=setTimeout(()=>{v.pos=(v.pos+1)%10;S.hw3.tick(s)},v.speed)},
+  on:{A:s=>{const v=s.v;if(!v.playing)return;
+        if(v.pos===4||v.pos===5){v.score++;v.speed=Math.max(80,v.speed-30);v.disp=String(v.score)}else{v.miss++;v.disp='✗'}
+        if(v.score>=5){v.playing=false;clearTimeout(s.t);s.rainbow();v.disp='笑臉'}
+        else if(v.miss>=3){v.playing=false;clearTimeout(s.t);s.fill('red');v.disp='哭臉'}},
+      AB:s=>{s.v={pos:0,speed:300,score:0,miss:0,playing:true,disp:''};S.hw3.tick(s)}},
+  readout:s=>`<span>score = ${s.v.score}</span><span>miss = ${s.v.miss}</span><span>speed = ${s.v.speed} ms</span>`}
+};
+document.querySelectorAll('[data-sim]').forEach(el=>new Sim(el,S[el.dataset.sim]));
+
+/* ---------- self check (remembered in this browser) ---------- */
+document.querySelectorAll('[data-check]').forEach(ul=>{
+  const key='ws2812hw-'+ul.dataset.check, boxes=[...ul.querySelectorAll('input')], msg=ul.nextElementSibling;
+  let saved=[];try{saved=JSON.parse(localStorage.getItem(key)||'[]')}catch(_){}
+  boxes.forEach((b,i)=>{b.checked=!!saved[i];b.addEventListener('change',upd)});
+  function upd(){const st=boxes.map(b=>b.checked);try{localStorage.setItem(key,JSON.stringify(st))}catch(_){}
+    msg.textContent=st.every(Boolean)?'全部打勾，這份作業完成了！':''}
+  upd();
+});
+
+/* ---------- teacher mode ---------- */
+const tbtn=document.getElementById('tbtn');
+function setTeacher(on){document.body.classList.toggle('teacher',on);tbtn.textContent='教師模式：'+(on?'開':'關');tbtn.setAttribute('aria-pressed',on)}
+tbtn.addEventListener('click',()=>setTeacher(!document.body.classList.contains('teacher')));
+if(location.hash==='#teacher')setTeacher(true);
+</script>
+</body>
+</html>
