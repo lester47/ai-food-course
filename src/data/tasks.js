@@ -8,7 +8,7 @@ const practiceFor=i=>i<5?'counter':i<10?'heart':'led';
 export const tasks = week1Tasks.map((a,i)=>({...a,id:`w1-t${String(i+1).padStart(2,'0')}`,weekId:'w1',advanced:a.tiers.challenge,images:[],submissionRequired:i===week1Tasks.length-1,practiceId:practiceFor(i)}));
 // 第 2 週（含原第 3 週的一板雙隊）與第 3 週（雙人競賽實驗室）
 week2Tasks.forEach((a,i)=>tasks.push({...a,id:`w2-t${String(i+1).padStart(2,'0')}`,weekId:'w2',advanced:a.tiers.challenge,images:[],submissionRequired:i===week2Tasks.length-1,practiceId:i<3?'usb':'race'}));
-week3Tasks.forEach((a,i)=>tasks.push({...a,id:`w3-t${String(i+1).padStart(2,'0')}`,weekId:'w3',advanced:a.tiers.challenge,images:[],submissionRequired:i===week3Tasks.length-1,practiceId:'race',practiceUrl:i===0?'./race/lesson.html':'./race/'}));
+week3Tasks.forEach((a,i)=>tasks.push({...a,id:`w3-t${String(i+1).padStart(2,'0')}`,weekId:'w3',advanced:a.tiers.challenge,images:[],submissionRequired:i===week3Tasks.length-1,practiceId:'race',practiceUrl:i===0?'./race/lesson.html#b3':i===1?'./race/lesson.html#explain':'./race/'}));
 // 第 2 週 Bonus（不計入本週 6 關與 180 分鐘）
 tasks.push({...week2Bonus,id:'w2-bonus',weekId:'w2',advanced:week2Bonus.tiers.challenge,images:[],submissionRequired:false,practiceId:'race'});
 later.forEach((list,wi)=>list.forEach((a,i)=>tasks.push({id:`w${wi+4}-t${String(i+1).padStart(2,'0')}`,weekId:`w${wi+4}`,title:a[0],concept:a[1],durationMinutes:30,analogy:'把大作品拆成一個個可測試的小任務，完成後再接起來。',objectives:[a[3]],steps:[a[2],'依測試方法操作，記錄實際結果與遇到的問題。','與同學說明結果，確認後再前往下一關。'],testing:[a[3]],troubleshooting:['一次只改一項設定；先確認輸入與預期格式，再檢查畫面。需要時請老師協助。'],advanced:['記錄一種失敗情境，說明你怎麼找到問題。'],images:[],submissionRequired:i===5,practiceId:wi===0?'map':'game',outline:true})));

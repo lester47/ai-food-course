@@ -261,7 +261,7 @@ test('復原用的房間狀態要完整才採用', async () => {
 test('課程頁：存在、有入口連結、不含參考程式碼', async () => {
   const { readFile } = await import('node:fs/promises');
   const lesson = await readFile('race/lesson.html', 'utf8');
-  for (const k of ['序列 寫入一行文字', '字串組合', 'plot bar graph', '出口票', '回家作業']) assert.ok(lesson.includes(k), k);
+  for (const k of ['序列 寫入一行文字', '字串組合', '點亮 x, y', '程式拆解', '序列特別篇', '出口票', '回家作業']) assert.ok(lesson.includes(k), k);
   assert.doesNotMatch(lesson, /onGesture\(|led\.plot|serial\.writeLine|plotBarGraph\(|localStorage/);
   assert.match(await readFile('src/race/app.js', 'utf8'), /href="\.\/lesson\.html"/);
 });
