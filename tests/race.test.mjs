@@ -114,7 +114,7 @@ test('分數單調遞增、去重、一次最多 +3、速度限制、不可替�
   assert.equal(e.s.players.red.score, 3);
   // 連發 50 則：受速度限制
   for (let i = 0; i < 50; i++) e.handle('red', { type: 'step', round: 1, sequence: 10 + i, count: 999 }, ctx.now + 4);
-  assert.ok(e.s.players.red.score <= 4, '瞬間不可超過額度');
+  assert.ok(e.s.players.red.score <= 6, '瞬間不可超過額度');
   // 客戶端送「勝利」或「紅隊加分」都無效
   assert.equal(e.handle('green', { type: 'win' }, ctx.now).error, 'bad_message');
   assert.equal(e.handle('green', { type: 'step', team: 'red', round: 1, sequence: 1, count: 1 }, ctx.now + 500).error, undefined);
@@ -302,4 +302,30 @@ test('教師入口：積木與 JavaScript 並列，積木由 MakeCode 官方繪�
   assert.match(r, /e\.origin !== ORIGIN/); // 只接受 MakeCode 傳回的訊息
   const { isMakeCode } = await import('../src/services/blocks-renderer.js');
   assert.ok(isMakeCode('basic.showString("R")')); assert.ok(!isMakeCode('const card = { name: "信義鄉" }'));
+});
+
+test('步數一批一批到達（綠隊實測狀況）：來太快的先欠著，稍後補上，不會丟掉', () => {
+  const ctx = race('microbit');
+  const { e } = ctx;
+  // 板子搖了 18 下，但電腦每 0.3 秒才一次收到 6 行
+  let board = 0, seq = 0;
+  for (let batch = 0; batch < 3; batch++) {
+    ctx.now += 300;
+    for (let i = 0; i < 6; i++) { board++; e.handle('green', { type: 'step', round: 1, sequence: ++seq, count: board }, ctx.now); }
+  }
+  assert.ok(e.s.players.green.score < 18, '當下會受速度上限暫時落後');
+  // 不再搖：伺服器依 nextDeadline 自己補記
+  for (let k = 0; k < 40 && e.nextDeadline() !== null; k++) { ctx.now = Math.max(ctx.now, e.nextDeadline()) + 25; e.tick(ctx.now); }
+  assert.equal(e.s.players.green.score, 18);
+  assert.equal(e.nextDeadline(), null);
+});
+
+test('補記仍受速度上限：一直送很大的步數也不能瞬間獲勝', () => {
+  const ctx = race();
+  const { e } = ctx;
+  const t0 = ctx.now;
+  let seq = 0;
+  while (e.s.phase === 'racing') { ctx.now += 20; e.handle('red', { type: 'step', round: 1, sequence: ++seq, count: 999 }, ctx.now); e.tick(ctx.now); }
+  assert.equal(e.s.winner, 'red');
+  assert.ok(ctx.now - t0 >= 1300, '至少要 1.3 秒以上才能走完 20 步，實際 ' + (ctx.now - t0));
 });

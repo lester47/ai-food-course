@@ -5,8 +5,9 @@ export const TARGET = 20;            // 先到 20 步獲勝
 export const COUNTDOWN_MS = 3000;    // 倒數 3 秒
 export const RECONNECT_MS = 60000;   // 斷線保留席位 60 秒
 export const MAX_STEP_JUMP = 3;      // 一則訊息最多加 3 步（容忍漏掉的行）
-export const STEP_RATE = 8;          // 每秒最多 8 步
-export const STEP_BURST = 4;         // 瞬間最多累積 4 步額度
+export const STEP_RATE = 10;         // 每秒最多記 10 步（超過的先欠著，稍後補上，不會丟掉）
+export const STEP_BURST = 6;         // 瞬間最多累積 6 步額度
+export const MAX_PENDING = 10;       // 最多先欠著 10 步（超過代表訊號異常，不再多認）
 export const TEAMS = ['red', 'green'];
 export const TEAM_NAME = { red: '紅隊', green: '綠隊' };
 export const PHASES = ['waiting', 'ready', 'countdown', 'racing', 'paused', 'finished'];
@@ -87,7 +88,7 @@ export function validSnapshot(s) {
 }
 
 // ---------- 房間引擎 ----------
-const newSeat = (nick, token, now) => ({ nick, token, score: 0, ready: false, input: null, device: false, rematch: false, seq: 0, online: true, goneAt: null, joinedAt: now });
+const newSeat = (nick, token, now) => ({ nick, token, score: 0, claim: 0, ready: false, input: null, device: false, rematch: false, seq: 0, online: true, goneAt: null, joinedAt: now });
 
 export class RoomEngine {
   constructor(state) {
@@ -200,6 +201,8 @@ export class RoomEngine {
       }
     }
     if (changed) this.bump();
+    // 補記先前來太快、還欠著的步數（credit 自己會 bump）
+    if (s.phase === 'racing') for (const t of TEAMS) if (this.credit(t, now)) changed = true;
     return changed;
   }
 
@@ -208,6 +211,7 @@ export class RoomEngine {
     if (s.phase === 'countdown') ds.push(s.startAt);
     if (s.phase === 'paused') ds.push(s.pausedAt + RECONNECT_MS);
     else for (const t of TEAMS) { const p = s.players[t]; if (p && !p.online && p.goneAt !== null) ds.push(p.goneAt + RECONNECT_MS); }
+    const pd = this.pendingDeadline(); if (pd !== null) ds.push(pd);
     return ds.length ? Math.min(...ds) : null;
   }
 
@@ -253,7 +257,7 @@ export class RoomEngine {
       case 'start_request': {
         if (s.host !== team) return { error: 'not_host' };
         if (s.phase !== 'ready') return { error: 'not_ready' };
-        for (const t of TEAMS) { const q = s.players[t]; q.score = 0; q.seq = 0; q.rematch = false; }
+        for (const t of TEAMS) { const q = s.players[t]; q.score = 0; q.claim = 0; q.seq = 0; q.rematch = false; }
         s.phase = 'countdown'; s.startAt = now + COUNTDOWN_MS; s.winner = null; s.finishedAt = null;
         this.buckets = { red: { tokens: STEP_BURST, at: 0 }, green: { tokens: STEP_BURST, at: 0 } };
         this.notify('countdown'); this.bump();
@@ -266,20 +270,11 @@ export class RoomEngine {
         if (!Number.isSafeInteger(seq) || !Number.isSafeInteger(count) || seq < 1 || count < 0 || count > 100000) return { error: 'bad_message' };
         if (seq <= p.seq) return {}; // 重複或亂序，忽略
         p.seq = seq;
-        if (count <= p.score) return {};
-        let inc = Math.min(count - p.score, MAX_STEP_JUMP);
-        const b = this.buckets[team];
-        b.tokens = Math.min(STEP_BURST, b.tokens + (b.at ? (now - b.at) / 1000 * STEP_RATE : STEP_BURST));
-        b.at = now;
-        inc = Math.min(inc, Math.floor(b.tokens));
-        if (inc <= 0) return { error: 'too_fast' };
-        b.tokens -= inc;
-        p.score = Math.min(TARGET, p.score + inc);
-        if (p.score >= TARGET && !s.winner) {
-          s.winner = team; s.phase = 'finished'; s.finishedAt = now; this.notify('win_' + team);
-        }
-        this.bump();
-        return { changed: true };
+        // 板子回報的累積步數先記成「應得步數」（每則最多多認 3 步），再依速度上限慢慢記分；
+        // 一時來太快的步數不會丟掉，會由 tick() 在接下來的零點幾秒內補上。
+        const claimed = Math.max(p.claim ?? p.score, p.score);
+        if (count > claimed) p.claim = Math.min(TARGET, count, claimed + MAX_STEP_JUMP, p.score + MAX_PENDING);
+        return { changed: this.credit(team, now) };
       }
       case 'rematch_request': {
         if (s.phase !== 'finished') return { error: 'not_now' };
@@ -294,6 +289,39 @@ export class RoomEngine {
   }
 
   // ---- 內部工具 ----
+  // 依速度上限把「應得步數」記進分數；回傳是否有變動
+  credit(team, now) {
+    const s = this.s, p = s.players[team];
+    if (!p || s.phase !== 'racing') return false;
+    const pending = Math.max(p.claim ?? p.score, p.score) - p.score;
+    if (pending <= 0) return false;
+    const b = this.buckets[team];
+    b.tokens = Math.min(STEP_BURST, b.tokens + (b.at ? (now - b.at) / 1000 * STEP_RATE : STEP_BURST));
+    b.at = now;
+    const inc = Math.min(pending, Math.floor(b.tokens));
+    if (inc <= 0) return false;
+    b.tokens -= inc;
+    p.score = Math.min(TARGET, p.score + inc);
+    if (p.score >= TARGET && !s.winner) {
+      s.winner = team; s.phase = 'finished'; s.finishedAt = now; this.notify('win_' + team);
+    }
+    this.bump();
+    return true;
+  }
+
+  // 還有欠著沒記的步數時，下一次可以補記的時間
+  pendingDeadline() {
+    if (this.s.phase !== 'racing') return null;
+    const ds = [];
+    for (const t of TEAMS) {
+      const p = this.s.players[t];
+      if (!p || Math.max(p.claim ?? p.score, p.score) <= p.score) continue;
+      const b = this.buckets[t];
+      ds.push(b.at ? b.at + Math.max(0, (1 - b.tokens) / STEP_RATE * 1000) : 0);
+    }
+    return ds.length ? Math.min(...ds) : null;
+  }
+
   bothOnline() { return this.seated.length === 2 && TEAMS.every(t => this.s.players[t].online); }
   devicesOk() { return TEAMS.every(t => { const p = this.s.players[t]; return p && (p.input !== 'microbit' || p.device); }); }
   release(t) { this.s.players[t] = null; if (this.s.host === t) this.s.host = otherTeam(t); }
@@ -305,7 +333,7 @@ export class RoomEngine {
     s.round++; s.winner = null; s.finishedAt = null; s.startAt = null; s.pausedAt = null; s.phase = 'waiting';
     for (const t of TEAMS) {
       const p = s.players[t]; if (!p) continue;
-      p.score = 0; p.seq = 0; p.rematch = false;
+      p.score = 0; p.claim = 0; p.seq = 0; p.rematch = false;
       p.ready = keepReady && (p.input !== 'microbit' || p.device);
     }
   }

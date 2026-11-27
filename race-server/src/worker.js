@@ -187,6 +187,7 @@ export class RaceRoom extends DurableObject {
     if (out.error) this.send(ws, { type: 'error', code: out.error });
     if (msg.type === 'leave') { this.attach(ws, { team: null, at: 0, dead: true }); this.safeClose(ws, 1000, 'left'); }
     if (out.changed) this.commit(now);
+    else this.schedule(); // 步數先欠著時，排好稍後補記的時間
   }
 
   async webSocketClose(ws, code) { this.onGone(ws); this.safeClose(ws, 1000, 'closed'); }
