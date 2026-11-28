@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第3週 步數接收頁</title>
+<style>
+:root{--bg:#f4f7f3;--surface:#fff;--fg:#1b241f;--muted:#5a6a61;--line:#d6dfd8;--accent:#1f7a4d;--red:#d23b3b;--green:#1f9a55;--warn:#b4511a;
+  --font:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;--mono:Consolas,"JetBrains Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#111613;--surface:#1a211d;--fg:#e3ebe6;--muted:#98a99f;--line:#2d3934;--accent:#5cc98f;--red:#ff6b6b;--green:#5cd68f;--warn:#f0a070;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:30px;margin:0 0 4px;font-weight:900}
+.sub{color:var(--muted);margin:0 0 20px}
+code{font-family:var(--mono);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:0 6px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:22px}
+button{font:700 16px var(--font);border:0;border-radius:99px;padding:10px 20px;cursor:pointer;background:var(--accent);color:#fff}
+button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+button:disabled{opacity:.5;cursor:default}
+.team{display:flex;gap:6px}
+.team button{background:transparent;color:var(--fg);border:2px solid var(--line)}
+.team button.on.r{background:var(--red);border-color:var(--red);color:#fff}
+.team button.on.g{background:var(--green);border-color:var(--green);color:#fff}
+.status{font-size:15px;color:var(--muted)}
+.status b{color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;border-top:8px solid var(--tc,var(--accent))}
+.nums{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.big{font:900 96px/1 var(--mono);font-variant-numeric:tabular-nums;color:var(--tc)}
+.goal{font-size:28px;color:var(--muted);font-weight:700}
+.pct{margin-left:auto;font:900 40px var(--mono);color:var(--muted)}
+.track{display:grid;grid-template-columns:repeat(20,1fr);gap:5px;margin:22px 0 12px}
+.track div{height:54px;border-radius:8px;background:var(--bg);border:2px solid var(--line);transition:background .2s,box-shadow .2s}
+.msg{font-size:22px;font-weight:900;min-height:1.6em}
+.msg.done{color:var(--warn)}
+.stats{display:flex;flex-wrap:wrap;gap:18px;margin-top:10px;font-size:15px;color:var(--muted)}
+.stats b{color:var(--fg);font-family:var(--mono)}
+.bad{color:var(--warn)}
+details{margin-top:22px}
+summary{cursor:pointer;color:var(--muted);font-weight:700}
+pre{background:#000;color:#7dffb0;border-radius:10px;padding:10px 12px;height:180px;overflow:auto;font:13px var(--mono);margin:8px 0 0}
+pre .x{color:#ff9a7a}
+.sim{margin-top:18px;border-top-width:1px}
+.simhead{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;margin-bottom:14px}
+.simhead b{font-size:18px}
+.simbody{display:flex;flex-wrap:wrap;gap:20px;align-items:center}
+.board{background:#1d1d1d;border-radius:16px;padding:16px 14px 10px;width:190px}
+.leds{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+.leds div{aspect-ratio:1;border-radius:4px;background:#3a2020;transition:background .15s,box-shadow .15s}
+.leds div.on{background:#ff3b30;box-shadow:0 0 10px #ff3b30}
+.ab{display:flex;justify-content:space-between;color:#aaa;font:700 13px var(--mono);margin-top:10px;padding:0 2px}
+.simbtns{display:flex;flex-wrap:wrap;gap:10px;flex:1;min-width:220px}
+.simbtns button{flex:1 1 180px}
+.err{background:#fbede2;color:#8a3a10;border-radius:10px;padding:10px 14px;margin-bottom:16px}
+.help{font-size:14px;color:var(--muted);margin-top:18px;padding-left:20px}
+.help li{margin:2px 0}
+@media (max-width:560px){.big{font-size:68px}.track{gap:3px}.track div{height:40px;border-radius:5px}.pct{font-size:28px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>第3週 步數接收頁</h1>
+  <p class="sub">micro:bit 每搖一下會傳來 <code>STEP,步數</code>，按 A 會傳 <code>RESET</code>。跑道跟 LED 長條圖一樣，20 步全亮。</p>
+
+  <div class="err" id="unsupported" hidden>這個瀏覽器不能讀 USB。請用電腦版 <b>Chrome</b> 或 <b>Edge</b> 打開這個檔案。下面的「示範模式」還是可以玩。</div>
+
+  <div class="bar">
+    <button id="connect" type="button">連接 micro:bit</button>
+    <button id="disconnect" type="button" class="ghost" disabled>中斷連線</button>
+    <div class="team" role="group" aria-label="選擇隊伍">
+      <button type="button" class="r on" data-t="R">紅隊</button>
+      <button type="button" class="g" data-t="G">綠隊</button>
+    </div>
+    <span class="status" id="status">尚未連線</span>
+  </div>
+
+  <div class="card" id="card">
+    <div class="nums"><span class="big" id="steps">0</span><span class="goal">/ <span id="goal">20</span> 步</span><span class="pct" id="pct">0%</span></div>
+    <div class="track" id="track"></div>
+    <div class="msg" id="msg">等待出發</div>
+    <div class="stats">
+      <span>收到 STEP：<b id="nOk">0</b> 行</span>
+      <span>RESET：<b id="nReset">0</b> 次</span>
+      <span>看不懂的資料：<b id="nBad">0</b> 行</span>
+      <span id="lastBad" class="bad"></span>
+    </div>
+  </div>
+
+  <div class="card sim">
+    <div class="simhead"><b>模擬 micro:bit</b><span class="status">沒有板子也能試；接上真的板子時，這裡的 LED 也會跟著亮</span></div>
+    <div class="simbody">
+      <div class="board"><div class="leds" id="leds"></div><div class="ab"><span>A</span><span>B</span></div></div>
+      <div class="simbtns">
+        <button type="button" id="demoStep">🤚 搖一下</button>
+        <button type="button" id="demoReset">🅰 按 A（RESET）</button>
+        <button type="button" class="ghost" id="demoSame">重送同一個數字</button>
+        <button type="button" class="ghost" id="demoBad">送錯誤資料 STEP,abc</button>
+      </div>
+    </div>
+  </div>
+
+  <details>
+    <summary>收到的原始資料</summary>
+    <pre id="log"></pre>
+  </details>
+
+  <ol class="help">
+    <li>micro:bit 程式每搖一下要送 <code>serial.writeLine("STEP," + 步數)</code>，歸零送 <code>RESET</code>。</li>
+    <li>先關掉 MakeCode 的「顯示資料」，避免連接埠被占用。</li>
+    <li>按「連接 micro:bit」，選名稱有 <b>mbed</b> 或 <b>micro:bit</b> 的裝置。</li>
+    <li>想一想：重送 <code>STEP,5</code> 會變成 10 嗎？（STEP 後面是「累積步數」，不是「多走幾步」）</li>
+  </ol>
+</div>
+
+<script>
+const GOAL=20;
+let steps=0, port=null, reader=null, keep=false, team='R';
+let nOk=0, nReset=0, nBad=0;
+const $=id=>document.getElementById(id);
+const track=$('track'); track.innerHTML='<div></div>'.repeat(GOAL);
+const cells=[...track.children];
+const ledBox=$('leds'); ledBox.innerHTML='<div></div>'.repeat(25);
+const leds=[...ledBox.children];
+$('goal').textContent=GOAL;
+
+function teamColor(){return team==='R'?'var(--red)':'var(--green)'}
+function draw(){
+  const tc=teamColor();
+  $('card').style.setProperty('--tc',tc);
+  $('steps').textContent=steps;
+  const shown=Math.min(steps,GOAL);
+  $('pct').textContent=Math.round(shown*100/GOAL)+'%';
+  const done=steps>=GOAL;
+  cells.forEach((c,i)=>{
+    const col=done?`hsl(${i*18} 90% 55%)`:(i<shown?tc:'');
+    c.style.background=col; c.style.boxShadow=done?`0 0 12px hsl(${i*18} 90% 55%)`:'';
+  });
+  const m=$('msg'); m.classList.toggle('done',done);
+  m.textContent=done?'20 步全亮！抵達終點 🎉':steps===0?'等待出發':`再 ${GOAL-steps} 步全亮`;
+  leds.forEach((d,i)=>{const x=i%5,y=Math.floor(i/5);d.classList.toggle('on',x*5+y<shown);});
+  $('nOk').textContent=nOk; $('nReset').textContent=nReset; $('nBad').textContent=nBad;
+}
+function log(line,bad){
+  const l=$('log'); const s=document.createElement('span');
+  if(bad) s.className='x';
+  s.textContent=new Date().toLocaleTimeString('zh-TW',{hour12:false})+'  '+line+(bad?'   ← 看不懂':'')+'\n';
+  l.appendChild(s); while(l.childNodes.length>300) l.removeChild(l.firstChild); l.scrollTop=1e9;
+}
+function handle(raw){
+  const line=raw.trim(); if(!line) return;
+  if(/^RESET$/i.test(line)){ steps=0; nReset++; log(line); draw(); return; }
+  const m=line.match(/^STEP\s*,\s*(\d+)$/i);
+  if(m){ steps=Number(m[1]); nOk++; log(line); $('lastBad').textContent=''; draw(); return; }
+  nBad++; log(line,true); $('lastBad').textContent='最後一行看不懂：「'+line.slice(0,30)+'」'; draw();
+}
+
+async function connect(){
+  try{
+    port=await navigator.serial.requestPort();
+    await port.open({baudRate:115200});
+  }catch(e){
+    port=null;
+    if(e.name==='NotFoundError'){ $('status').textContent='沒有選擇裝置'; return; }
+    if(e.name==='SecurityError'||/permissions policy/i.test(e.message)){
+      $('status').textContent='';
+      $('unsupported').innerHTML='這個連結頁面不允許讀 USB。請改用課程網站上的這一頁，或在電腦上直接用 <b>Chrome</b> 打開這個 HTML 檔。下面的「模擬 micro:bit」還是可以玩。';
+      $('unsupported').hidden=false; return;
+    }
+    $('status').textContent='連線失敗：'+e.message+'（連接埠可能被 MakeCode 占用）'; return;
+  }
+  $('status').innerHTML='<b>已連線</b>，開始搖吧！';
+  $('connect').disabled=true; $('disconnect').disabled=false; keep=true;
+  const dec=new TextDecoderStream(); const closed=port.readable.pipeTo(dec.writable).catch(()=>{});
+  reader=dec.readable.getReader(); let buf='';
+  try{
+    while(keep){
+      const {value,done}=await reader.read(); if(done) break;
+      buf+=value; const parts=buf.split(/\r?\n/); buf=parts.pop(); parts.forEach(handle);
+    }
+  }catch(e){ $('status').textContent='連線中斷：'+e.message+'（檢查 USB 線後再按連接）'; }
+  try{reader.releaseLock()}catch(_){}
+  await closed; try{await port.close()}catch(_){}
+  port=null; $('connect').disabled=false; $('disconnect').disabled=true;
+  if(!keep) $('status').textContent='已中斷連線';
+}
+async function disconnect(){ keep=false; try{await reader.cancel()}catch(_){} }
+
+if(!('serial' in navigator)){ $('unsupported').hidden=false; $('connect').disabled=true; }
+$('connect').onclick=connect; $('disconnect').onclick=disconnect;
+document.querySelectorAll('.team button').forEach(b=>b.onclick=()=>{
+  team=b.dataset.t; document.querySelectorAll('.team button').forEach(x=>x.classList.toggle('on',x===b)); draw();
+});
+$('demoStep').onclick=()=>{ if(steps<GOAL) handle('STEP,'+(steps+1)); };
+$('demoSame').onclick=()=>handle('STEP,'+steps);
+$('demoReset').onclick=()=>handle('RESET');
+$('demoBad').onclick=()=>handle('STEP,abc');
+draw();
+</script>
+</body>
+</html>
